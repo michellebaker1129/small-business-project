@@ -6,6 +6,7 @@ module.exports = {
     getAllUsers(req, res) {
       User.find({})
         .populate("posts")
+        .populate("images")
         .then((dbUserData) => res.json(dbUserData))
         .catch((err) => {
           console.log(err);
@@ -19,6 +20,7 @@ module.exports = {
       try {
         const dbUserData = await User.findOne({ _id: req.params.userId })
           .populate("posts")
+          .populate("images")
         if (!dbUserData) {
           return res.status(500).json({ message: "no user found with that ID" });
         }
