@@ -1,5 +1,5 @@
 const { trusted } = require("mongoose");
-const { User, Post } = require("../models");
+const { User, Post, Image } = require("../models");
 module.exports = {
     // get all users
     // GET /api/users/
@@ -73,4 +73,12 @@ module.exports = {
     },
 
     // TODO get all images by user id
+
+    getImagesByUserId(req, res) {
+      Image.find({userId: req.params.userId})
+      .then((dbUserData) => res.json(dbUserData))
+      .catch((err) => {
+        res.status(500).json(err);
+      });
+    }
 };
