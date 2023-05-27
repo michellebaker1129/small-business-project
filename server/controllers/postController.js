@@ -30,9 +30,11 @@ module.exports = {
         Post.create(req.body)
             .then((dbPostData) => {
                 // loop over req.body.images and add postId: dbPostData._id to each image
-                req.body.images.forEach((image) => {
-                    image.postId = dbPostData._id;
-                });
+                // if (req.body.images.length > 0) {
+                //     req.body.images.forEach((image) => {
+                //         image.postId = dbPostData._id;
+                //     });
+                // }
 
                 // TODO add images to Post and User (research if we can just add images to Post)
 
@@ -42,7 +44,7 @@ module.exports = {
                     },
                     {
                         $push: { posts: dbPostData._id },
-                        $push: { images: req.body.images },
+                        // $push: { images: req.body.images },
                     },
                     {
                         new: true,
@@ -74,7 +76,7 @@ module.exports = {
     //use $pull like in the users
     // delete the Post from the user who owns it
     deletePost(req, res) {
-        Post.findOneAndDelete({ _id: req.params.PostId })
+        Post.findOneAndDelete({ _id: req.params.postId })
             .then((dbPostData) => {
                 // find the user who owns the Post
                 // delete the Post from their Post array

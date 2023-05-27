@@ -2,7 +2,7 @@ const { trusted } = require("mongoose");
 const { User, Post, Image } = require("../models");
 module.exports = {
     // get all users
-    // GET /api/users/
+    // GET /api/user/
     getAllUsers(req, res) {
       User.find({})
         .populate("posts")
@@ -66,7 +66,7 @@ module.exports = {
     // DELETE /api/users/:userId
     deleteUser(req, res) {
       User.findOneAndDelete({ _id: req.params.userId })
-        .then((dbUserData) => res.json(dbUserData))
+        .then(() => res.json({ message: "User deleted" }))
         .catch((err) => {
           res.status(500).json(err);
         });
