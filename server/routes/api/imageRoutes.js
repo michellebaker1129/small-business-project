@@ -1,3 +1,5 @@
+// TODO import User, Post controllers
+
 // create a route to get all images by user id
 // TODO get all images by user id
 // GET /api/users/:userId/images

@@ -100,11 +100,7 @@ module.exports = {
             })
     },
 
-    // TODO get all images by user id
-    // GET /api/users/:userId/images
-
     // TODO get all images by post id
-    // GET /api/posts/:postId/images
 
     // TODO get image by id
 };

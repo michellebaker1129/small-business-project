@@ -71,4 +71,6 @@ module.exports = {
           res.status(500).json(err);
         });
     },
+
+    // TODO get all images by user id
 };
