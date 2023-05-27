@@ -34,7 +34,7 @@ module.exports = {
                     image.postId = dbPostData._id;
                 });
 
-                // TODO add images to Post and User
+                // TODO add images to Post and User (research if we can just add images to Post)
 
                 return User.findOneAndUpdate(
                     {
@@ -99,4 +99,12 @@ module.exports = {
                     .catch((err) => res.status(500).json(err));
             })
     },
+
+    // TODO get all images by user id
+    // GET /api/users/:userId/images
+
+    // TODO get all images by post id
+    // GET /api/posts/:postId/images
+
+    // TODO get image by id
 };
