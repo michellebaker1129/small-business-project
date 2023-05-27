@@ -11,13 +11,23 @@ const PostSchema = new Schema({
   postContent: {
     type: String,
     required: true,
-    minlength: 1,
-    maxlength: 280
   },
   createdAt: {
     type: Date,
     default: Date.now
   },
+  postType: {
+    type: String,
+    required: true,
+    enum: ['client', 'contract', 'invoice', 'admin'],
+    default: 'client',
+  },
+  images: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'Image'
+    }
+  ],
 }, {
   toJSON: {
     getters:true

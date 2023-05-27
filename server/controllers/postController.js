@@ -1,25 +1,48 @@
-const { Post, User } = require("../models");
+const { Post, User, Image } = require("../models");
 module.exports = {
     // get all Posts
-    getAllPost(req, res) {
+    getAllPosts(req, res) {
       Post.find()
+        .populate("images")
         .then((dbPostData) => res.json(dbPostData))
         .catch((err) => res.status(500).json(err));
     },
     getSinglePost(req, res) {
       Post.findOne({ _id: req.params.postId })
+        .populate("images")
         .then((dbPostData) => res.json(dbPostData))
         .catch((err) => res.status(500).json(err));
     },
     createPost(req, res) {
+        // TODO create image and add to user and post
+        // req.body:
+        // {
+        //     "userId": "60f1b2b7f3e9a5b4a4f9f8b1",
+        //     "content": "content including images",
+        //     "images": [
+        //         {
+        //            "userId": "some user id",
+        //            "image": "some base64 string",
+        //         }
+        //     ]
+        // }
+        // TODO add `postId: dbPostData._id` to each image
         Post.create(req.body)
             .then((dbPostData) => {
+                // loop over req.body.images and add postId: dbPostData._id to each image
+                req.body.images.forEach((image) => {
+                    image.postId = dbPostData._id;
+                });
+
+                // TODO add images to Post and User (research if we can just add images to Post)
+
                 return User.findOneAndUpdate(
                     {
                         _id: req.body.userId,
                     },
                     {
                         $push: { posts: dbPostData._id },
+                        $push: { images: req.body.images },
                     },
                     {
                         new: true,
@@ -55,6 +78,7 @@ module.exports = {
             .then((dbPostData) => {
                 // find the user who owns the Post
                 // delete the Post from their Post array
+                // delete any images associated with the Post
                 // delete the Post
                 Promise.all([
                     User.findOneAndUpdate(
@@ -67,64 +91,16 @@ module.exports = {
                             },
                         }
                     ),
-                    Reaction.deleteMany({ postId: req.params.postId }),
+                    Image.deleteMany({ postId: req.params.postId }),
                 ])
-                    .then(([dbUserData, dbReactionData]) => {
+                    .then(([dbUserData, dbImageData]) => {
                         res.json({ message: "Successfully deleted post" });
                     })
                     .catch((err) => res.status(500).json(err));
             })
     },
 
-    //match add 
-    async addReaction(req, res) { 
-        try {
-            const dbPostData = await Post.findOneAndUpdate(
-                {
-                    _id: req.params.postId
-                }, {
-                $addToSet: {
-                    reactions: req.body
-                }
-            }, {
-                runValidators: true,
-                new: true
-            });
+    // TODO get all images by post id
 
-            return res.json(dbPostData);
-        } catch (err) {
-            return res.status(500).json(err);
-        }
-    },
-        
-    //try to send messages when i can 
-    // .then
-    // .catch
-
-    deleteReaction(req, res) {
-        Post.findOneAndUpdate(
-            {
-                _id: req.params.postId,
-            },
-            {
-                $pull: {
-                    reactions: {
-                        reactionId: req.params.reactionId,
-                    },
-                },
-            },
-            {
-                runValidators: true,
-                new: true,
-            }
-        )
-            .then((dbPostData) => {
-                if (!dbPostData) {
-                    res.status(404).json({ message: "No Post found with this id" });
-                    return;
-                }
-                res.json({ message: "Successfully deleted the reaction" });
-            })
-            .catch((err) => res.status(500).json(err));
-    },
+    // TODO get image by id
 };
