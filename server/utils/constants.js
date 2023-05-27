@@ -1,0 +1,5 @@
+const MAX_ALLOWED_PHOTOS_TO_UPLOAD = 4;
+
+module.exports = {
+  MAX_ALLOWED_PHOTOS_TO_UPLOAD,
+};

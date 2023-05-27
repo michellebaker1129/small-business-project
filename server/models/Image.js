@@ -4,7 +4,7 @@ const { Schema, model } = require('mongoose');
 const ImageSchema = new Schema(
   {
     // Schemas define the properties of the document
-    image: {
+    imagePath: {
       type: String,
       required: true,
       trim: true

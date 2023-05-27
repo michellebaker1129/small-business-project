@@ -22,7 +22,7 @@ module.exports = {
         //     "images": [
         //         {
         //            "userId": "some user id",
-        //            "image": "some base64 string",
+        //            "image": "some image path",
         //         }
         //     ]
         // }
@@ -100,24 +100,5 @@ module.exports = {
                     })
                     .catch((err) => res.status(500).json(err));
             })
-    },
-
-    // TODO get all images by post id
-
-    getImagesByPostId(req, res) {
-        Image.find({postId: req.params.postId})
-        .then((dbUserData) => res.json(dbUserData))
-        .catch((err) => {
-        res.status(500).json(err);
-      });
-    },
-
-    // TODO get image by id
-    getImageById(req, res){
-        Image.findById(req.params.imageId)
-        .then((dbUserData) => res.json(dbUserData))
-        .catch((err) => {
-          res.status(500).json(err);
-        });
     },
 };
