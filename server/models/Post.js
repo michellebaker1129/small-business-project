@@ -1,4 +1,4 @@
-const { Schema, model } = require('mongoose');
+import { Schema, model } from 'mongoose';
 // Schemas define the shape of the documents within the collection.
 
 const PostSchema = new Schema({
@@ -34,13 +34,13 @@ const PostSchema = new Schema({
   ],
 }, {
   toJSON: {
-    getters:true
-  }, 
-  id:false
+    getters: true
+  },
+  id: false
 }
-);  
+);
 
 // Create model using mongoose.model()
 const Post = model('Post', PostSchema);
 
-module.exports = Post;
+export default Post;

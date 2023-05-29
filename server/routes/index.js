@@ -1,11 +1,13 @@
-const router = require('express').Router();
+import router from 'express';
 
-const api = require('./api');
+import api from './api';
 
-router.use('/api', api);
+const PrimaryRoutes = router.Router();
 
-router.use((req, res) => {
+PrimaryRoutes.use('/api', api);
+
+PrimaryRoutes.use((req, res) => {
   res.send("<h1>Wrong Route!</h1>")
 });
 
-module.exports = router;
+export default PrimaryRoutes;

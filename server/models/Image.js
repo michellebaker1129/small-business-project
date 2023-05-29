@@ -1,4 +1,4 @@
-const { Schema, model } = require('mongoose');
+import { Schema, model } from 'mongoose';
 
 // Schemas define the shape of the documents within the collection.
 const ImageSchema = new Schema(
@@ -32,4 +32,4 @@ const ImageSchema = new Schema(
 // Create model using mongoose.model()
 const Image = model('Image', ImageSchema);
 
-module.exports = Image;
+export default Image;

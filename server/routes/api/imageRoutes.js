@@ -1,18 +1,10 @@
 const router = require("express").Router();
-const multer  = require('multer');
+import multer from 'multer';
 const upload = multer({ dest: '../../uploads/' })
 
-const {
-    MAX_ALLOWED_PHOTOS_TO_UPLOAD
-} = require("../../utils/constants");
+import { MAX_ALLOWED_PHOTOS_TO_UPLOAD } from "../../utils/constants";
 
-const {
-    getImagesByUserId,
-    getImagesByPostId,
-    getImageById,
-    createImage,
-    deleteImage,
-} = require("../../controllers/imageController");
+import { getImagesByUserId, getImagesByPostId, getImageById, createImage, deleteImage } from "../../controllers/imageController";
 
 router.route("/image/:imageId").get(getImageById);
 router.route("/user/:userId").get(getImagesByUserId);
@@ -43,4 +35,4 @@ router.post("/image/user/:userId/post/:postId", upload.array('images', MAX_ALLOW
 // }).post(createImage)
 router.route("/image/:imageId").delete(deleteImage);
 
-module.exports = router;
+export default router;

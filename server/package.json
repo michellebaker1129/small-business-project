@@ -2,19 +2,30 @@
   "name": "small-business-project-server",
   "version": "0.1.0",
   "description": "",
-  "main": "server.js",
+  "main": "server.mjs",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js",
-    "start-dev": "nodemon server.js"
+    "start": "node server.mjs",
+    "start-dev": "nodemon server.mjs"
   },
   "author": "",
   "license": "",
   "dependencies": {
-    "express": "^4.17.1",
-    "mongoose": "^6.0.13"
+    "@apollo/datasource-rest": "^6.0.0",
+    "@apollo/server": "^4.7.1",
+    "apollo-server": "^3.12.0",
+    "body-parser": "^1.20.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "graphql": "^16.6.0",
+    "graphql-compose": "^9.0.10",
+    "graphql-compose-mongoose": "^9.8.0",
+    "mongoose": "^6.0.13",
+    "multer": "^1.4.5-lts.1"
   },
   "devDependencies": {
     "nodemon": "^2.0.22"
-  }
+  },
+  "type": "module"
 }
