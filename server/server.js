@@ -1,16 +1,28 @@
-const express = require('express');
-const db = require('./config/connection');
+const { ApolloServer } = require("@apollo/server");
+const { startStandaloneServer } = require("@apollo/server/standalone");
+const mongoose = require("mongoose");
+require("dotenv").config();
 
-const PORT = process.env.PORT || 3001;
-const app = express();
+const { resolvers } = require("./graphql/resolvers.js");
+const { typeDefs } = require("./models/typeDefs.js");
 
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
-app.use(require("./routes"))
+const server = new ApolloServer({ typeDefs, resolvers });
 
-db.once('open', () => {
-    app.listen(PORT, () => {
-      console.log(`API server running on port ${PORT}!`);
+// Database connection
+mongoose
+  .connect(process.env.MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => {
+    console.log("Db Connected");
+
+    startStandaloneServer(server, {
+      listen: { port: process.env.PORT || 4000 },
+    }).then(({ url }) => {
+      console.log(`Server ready at ${url}`);
     });
+  })
+  .catch(err => {
+    console.log(err.message);
   });
-  
