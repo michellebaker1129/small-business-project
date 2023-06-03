@@ -15,6 +15,7 @@ const LOGIN_USER = gql`
       loginInput: $loginInput
     ) {
       email
+      role
       token
     }
   }

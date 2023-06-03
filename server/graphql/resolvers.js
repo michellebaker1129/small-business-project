@@ -6,7 +6,7 @@ const { User } = require("../models/User.js");
 const { Post } = require("../models/Post.js");
 const { Comment } = require("../models/Comment.js");
 const { Image } = require("../models/Image.js");
-const { USER_ALREADY_EXISTS, USER_DOESNT_EXIST, PASSWORD_SALT, INCORRECT_PASSWORD } = require("../utils/constants.js");
+const { USER_ALREADY_EXISTS, USER_DOESNT_EXIST, PASSWORD_SALT, INCORRECT_PASSWORD, USER_ROLES } = require("../utils/constants.js");
 
 // GraphQL Resolvers
 const resolvers = {
@@ -68,12 +68,14 @@ const resolvers = {
       const newUser = new User({
         email: email.toLowerCase(),
         password: hashedPassword,
+        role: USER_ROLES.CLIENT,
       });
 
       // create jwt (attach to user model)
       const token = jwt.sign(
         {
           user_id: newUser._id,
+          role: newUser.role,
           email,
         },
         process.env.JWT_STRING || "UNSAFE_STRING",
@@ -114,6 +116,7 @@ const resolvers = {
       const token = jwt.sign(
         {
           user_id: foundUser._id,
+          role: foundUser.role,
           email,
         },
         process.env.JWT_STRING || "UNSAFE_STRING",
