@@ -15,6 +15,7 @@ const REGISTER_USER = gql`
       registerInput: $registerInput
     ) {
       email
+      role
       token
     }
   }
