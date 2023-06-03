@@ -1,10 +1,10 @@
 const mongoose = require("mongoose");
 
-const Post = mongoose.model("Post", {
+const Comment = mongoose.model("Comment", {
   message: String,
   userId: String,
-  comments: Array,
+  postId: String,
   images: Array,
 });
 
-module.exports = { Post };
+module.exports = { Comment };

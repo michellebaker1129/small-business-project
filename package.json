@@ -1,0 +1,27 @@
+{
+  "name": "client-portal-project",
+  "version": "0.1.0",
+  "description": "The client and server for the client-portal-project",
+  "main": "index.js",
+  "scripts": {
+    "start-server": "npm run --prefix server start",
+    "start-client": "npm run --prefix client start",
+    "setup-server": "npm run --prefix server setup",
+    "setup-client": "npm run --prefix client setup",
+    "start": "concurrently \"npm run start-server\" \"npm run start-client\"",
+    "setup": "concurrently \"npm run setup-server\" \"npm run setup-client\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JosiahRooney/client-portal.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/JosiahRooney/client-portal/issues"
+  },
+  "homepage": "https://github.com/JosiahRooney/client-portal#readme",
+  "dependencies": {
+    "concurrently": "^8.0.1"
+  }
+}

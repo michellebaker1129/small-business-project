@@ -1,20 +1,30 @@
 {
-  "name": "small-business-project-server",
+  "name": "client-portal-project",
   "version": "0.1.0",
   "description": "",
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js",
-    "start-dev": "nodemon server.js"
+    "dev": "nodemon server.js",
+    "setup": "npm i"
   },
+  "keywords": [],
   "author": "",
-  "license": "",
+  "license": "ISC",
   "dependencies": {
-    "express": "^4.17.1",
-    "mongoose": "^6.0.13"
+    "@apollo/server": "^4.4.1",
+    "apollo-server-errors": "^3.3.1",
+    "bcryptjs": "^2.4.3",
+    "client-portal-project": "file:",
+    "dotenv": "^16.0.3",
+    "graphql": "^16.6.0",
+    "graphql-tag": "^2.12.6",
+    "jsonwebtoken": "^9.0.0",
+    "mongoose": "^7.0.1"
   },
   "devDependencies": {
-    "nodemon": "^2.0.22"
+    "eslint": "^8.41.0",
+    "opener": "^1.5.2"
   }
 }
