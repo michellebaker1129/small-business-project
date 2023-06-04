@@ -200,24 +200,14 @@ const resolvers = {
       return deletedUser;
     },
 
-    createPost: async (_, { message, userId, comments, imageUrls }) => {
-      // loop through images and comments and create them
-      const newComments = [];
+    createPost: async (_, { message, userId, imageUrls }) => {
+      // loop through images and create them
       const newImages = [];
 
-      for (let i = 0; i < comments.length; i++) {
-        const newComment = new Comment({
-          message: comments[i].message,
-          userId,
-          postId: comments[i].postId,
-        });
-        await newComment.save();
-        newComments.push(newComment);
-      }
-
+      // TODO maybe reuse this?
       for (let i = 0; i < imageUrls.length; i++) {
         const newImage = new Image({
-          url: imageUrls[i],
+          url: imageUrls[i], // /images/1234.jpg
           userId,
         });
         await newImage.save();
@@ -227,11 +217,36 @@ const resolvers = {
       const newPost = new Post({
         message,
         userId,
-        comments: newComments,
         images: newImages,
       });
       await newPost.save();
       return newPost;
+    },
+
+    sendMessage: async (_, {messageInput: { senderId, message, receiverId }}) => {
+      // check if sender exists
+      const sender = await User.findById(senderId);
+
+      // check if receiver exists
+      const receiver = await User.findById(receiverId);
+      if (!receiver) {
+        throw new Error(`User with ID ${receiverId} not found`);
+      }
+
+      // check if sender is admin or receiver is admin
+      if (sender.role !== USER_ROLES.ADMIN && receiver.role !== USER_ROLES.ADMIN) {
+        throw new Error("Messages cannot be sent between two clients");
+      }
+
+      // create message
+      const newMessage = new Post({
+        senderId,
+        message,
+        receiverId,
+      });
+      
+      // save message to sender and receiver
+      await newMessage.save();
     },
 
     updatePost: async (_, args) => {
