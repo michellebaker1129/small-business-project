@@ -5,7 +5,7 @@ const INCORRECT_PASSWORD = "INCORRECT_PASSWORD";
 const USER_ROLES = {
   ADMIN: "ADMIN",
   CLIENT: "CLIENT"
-}
+};
 
 module.exports = {
   PASSWORD_SALT,

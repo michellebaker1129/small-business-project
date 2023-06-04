@@ -58,6 +58,7 @@ const typeDefs = gql`
     users: [User]
     user(id: ID): User
     getAllUsers(id: ID): [User]
+    getUserById(clientId: ID, adminId: ID): User
 
     posts: [Post]
     post(id: ID): Post

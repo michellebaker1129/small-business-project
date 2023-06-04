@@ -19,13 +19,37 @@ const resolvers = {
       if (!admin) {
         throw new Error(`User with ID ${adminId} not found`);
       }
-      if (admin.role !== "ADMIN") {
+      if (admin.role !== USER_ROLES.ADMIN) {
         throw new Error(`User with ID ${adminId} is not an admin`);
       }
-      const users = await User.find({});
-      return users;
+      const clients = await User.find({
+        // filter out admin users
+        role: { $ne: USER_ROLES.ADMIN },
+      });
+      return clients;
     },
-    
+    getUserById: async (_, args) => {
+      const { clientId, adminId } = args;
+      // check if admin exists
+      const admin = await User.findById(adminId);
+      if (!admin) {
+        throw new Error(`User with ID ${adminId} not found`);
+      }
+
+      // check if admin is admin
+      if (admin.role !== USER_ROLES.ADMIN) {
+        throw new Error(`User with ID ${adminId} is not an admin`);
+      }
+      
+      // check if client exists
+      const client = await User.findById(clientId);
+      // return client info
+      if (!client) { 
+        throw new Error(`User with ID ${clientId} not found`);
+      }
+      return client;
+    },
+
     posts: async () => await Post.find({}),
     post: async (_, args) => await Post.findById(args.id),
     getPostsByUserId: async (_, args) => {
