@@ -13,10 +13,30 @@ const resolvers = {
   Query: {
     users: async () => await User.find({}),
     user: async (_, args) => await User.findById(args.id),
+    getAllUsers: async (_, args) => {
+      const adminId = args.id;
+      const admin = await User.findById(adminId);
+      if (!admin) {
+        throw new Error(`User with ID ${adminId} not found`);
+      }
+      if (admin.role !== "ADMIN") {
+        throw new Error(`User with ID ${adminId} is not an admin`);
+      }
+      const users = await User.find({});
+      return users;
+    },
+    
     posts: async () => await Post.find({}),
     post: async (_, args) => await Post.findById(args.id),
+    getPostsByUserId: async (_, args) => {
+      const { userId } = args;
+      const posts = await Post.find({ userId });
+      return posts;
+    },
+
     images: async () => await Image.find({}),
     image: async (_, args) => await Image.findById(args.id),
+    
     comments: async () => await Comment.find({}),
     comment: async (_, args) => await Comment.findById(args.id),
   },
