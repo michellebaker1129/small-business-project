@@ -34,6 +34,7 @@ function NavBar() {
               </>
             )}
           </Box>
+          {/* TODO maybe use <Avatar /> (will need image) */}
         </Toolbar>
       </AppBar>
     </Box >

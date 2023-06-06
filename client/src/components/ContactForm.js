@@ -5,6 +5,7 @@ import { useMutation, gql } from "@apollo/client";
 
 import { useForm } from "../hooks";
 import { AuthContext } from "../context/authContext";
+import { NotificationContext } from "../context/notificationContext";
 
 const propTypes = {
   clientId: PropTypes.string.isRequired,
@@ -29,17 +30,19 @@ const SEND_MESSAGE = gql`
 function ContactForm({ clientId }) {
   const [errors, setErrors] = useState([]);
   const { user } = useContext(AuthContext);
+  const { setNotification } = useContext(NotificationContext);
 
   // TODO handle images
-  const { onChange, onSubmit, values } = useForm(handleSubmit, {
+  const { onChange, onSubmit, values, clearForm } = useForm(handleSubmit, {
     message: "",
   });
 
   const [sendMessage, { loading }] = useMutation(SEND_MESSAGE, {
     update(_, { data: { sendMessage: messageData } }) {
-      // TODO send a notification to the receiver
-      // clear the form
-      values.message = "";
+      setNotification({
+        type: "success",
+        message: "Message sent successfully",
+      });
     },
     onError({ graphQLErrors }) {
       setErrors(graphQLErrors);
@@ -57,6 +60,13 @@ function ContactForm({ clientId }) {
     sendMessage();
   }
 
+  function submitForm(e) {
+    onSubmit(e);
+
+    // TODO get this to work
+    clearForm();
+  }
+
   return (
     <Stack spacing={2}>
       <TextField
@@ -70,7 +80,7 @@ function ContactForm({ clientId }) {
           {error.message}
         </Alert>
       ))}
-      <Button onClick={onSubmit} variant="contained">
+      <Button onClick={submitForm} variant="contained">
         Send
       </Button>
     </Stack>

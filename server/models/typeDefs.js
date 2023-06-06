@@ -64,7 +64,7 @@ const typeDefs = gql`
 
     posts: [Post]
     post(id: ID): Post
-    getPostsByUserId(userId: ID): [Post]
+    getAllPostsByConversationParticipantIds(userId: ID, secondUserId: ID): [Post]
 
     comments: [Comment]
     comment(id: ID): Comment

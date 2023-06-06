@@ -8,6 +8,7 @@ import AdminDashboard from "./views/AdminDashboard";
 import AdminClientView from "./views/AdminClientView";
 
 import NavBar from "./components/NavBar";
+import Notification from "./components/Notification";
 
 import "./App.css";
 
@@ -24,6 +25,8 @@ function App() {
 
         <Route path="*" element={<h1>Not Found</h1>} />
       </Routes>
+
+      <Notification />
     </div>
   );
 }

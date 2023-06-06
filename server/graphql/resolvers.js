@@ -52,9 +52,18 @@ const resolvers = {
 
     posts: async () => await Post.find({}),
     post: async (_, args) => await Post.findById(args.id),
-    getPostsByUserId: async (_, args) => {
-      const { userId } = args;
-      const posts = await Post.find({ userId });
+    getAllPostsByConversationParticipantIds: async (_, args) => {
+      // TODO add pagination
+      const { userId, secondUserId } = args;
+
+      const posts = await Post.find({
+        $or: [
+          { senderId: userId, receiverId: secondUserId },
+          { senderId: secondUserId, receiverId: userId },
+        ],
+      })
+        .sort({ createdAt: -1 });
+      
       return posts;
     },
 

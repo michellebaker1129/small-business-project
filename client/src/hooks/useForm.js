@@ -7,6 +7,12 @@ const useForm = (callback, initialState = {}) => {
     setValues({ ...values, [e.target.name]: e.target.value });
   };
 
+  // TODO get this to work
+  // Clear form
+  const clearForm = () => {
+    setValues(initialState);
+  };
+
   const onSubmit = async (e) => {
     e.preventDefault();
 
@@ -17,6 +23,7 @@ const useForm = (callback, initialState = {}) => {
     onChange,
     onSubmit,
     values,
+    clearForm,
   };
 };
 

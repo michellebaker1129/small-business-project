@@ -1,10 +1,12 @@
 import React, { useContext } from "react";
 import { useQuery, gql } from "@apollo/client";
 import { useParams } from "react-router-dom";
+import { AppBar, Toolbar } from "@mui/material";
 
 import { AuthContext } from "../context/authContext";
 
 import ContactForm from "../components/ContactForm";
+import MessageFeed from "../components/MessageFeed";
 
 // get client id from useParams hook
 // get admin id from useContext AuthContext (../context/authContext.js)
@@ -45,7 +47,12 @@ const AdminClientView = () => {
       <p>{getUserById.fullname}</p>
       <p>{getUserById.email}</p>
 
-      <ContactForm clientId={clientId} />
+      <MessageFeed clientId={clientId} />
+
+      <AppBar position="fixed" sx={{ top: "auto", bottom: 0 }}>
+        <ContactForm clientId={clientId} />
+      </AppBar>
+      <Toolbar />
     </div>
   );
 };
