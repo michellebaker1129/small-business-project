@@ -7,19 +7,22 @@ import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import client from "./apollo/apolloClient";
 import { AuthProvider } from "./context/authContext";
+import { NotificationProvider } from "./context/notificationContext";
 
 import "./index.css";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <AuthProvider>
-    <ApolloProvider client={client}>
-      <BrowserRouter>
-        <React.StrictMode>
-          <App />
-        </React.StrictMode>
-      </BrowserRouter>
-    </ApolloProvider>
+    <NotificationProvider>
+      <ApolloProvider client={client}>
+        <BrowserRouter>
+          <React.StrictMode>
+            <App />
+          </React.StrictMode>
+        </BrowserRouter>
+      </ApolloProvider>
+    </NotificationProvider>
   </AuthProvider>,
 );
 

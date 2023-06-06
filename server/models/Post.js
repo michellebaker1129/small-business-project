@@ -2,9 +2,9 @@ const mongoose = require("mongoose");
 
 const Post = mongoose.model("Post", {
   message: String,
-  userId: String,
-  comments: Array,
-  images: Array,
+  senderId: String,
+  receiverId: String,
+  createdAt: Date,
 });
 
 module.exports = { Post };

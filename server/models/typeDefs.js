@@ -4,23 +4,22 @@ const typeDefs = gql`
   type Image {
     id: ID
     url: String
-    userId: ID
+    senderId: ID
   }
 
   type Comment {
     id: ID
     message: String
-    userId: ID
+    senderId: ID
     postId: ID
-    images: [Image]
   }
 
   type Post {
     id: ID
     message: String
-    userId: ID
-    comments: [Comment]
-    images: [Image]
+    senderId: ID
+    receiverId: ID
+    createdAt: String
   }
 
   type User {
@@ -35,9 +34,6 @@ const typeDefs = gql`
     zip: String
     country: String
     role: String
-    posts: [Post]
-    comments: [Comment]
-    images: [Image]
     password: String
     token: String
   }
@@ -54,14 +50,21 @@ const typeDefs = gql`
     password: String
   }
 
+  input messageInput {
+    message: String
+    senderId: ID
+    receiverId: ID
+  }
+
   type Query {
     users: [User]
     user(id: ID): User
     getAllUsers(id: ID): [User]
+    getUserById(clientId: ID, adminId: ID): User
 
     posts: [Post]
     post(id: ID): Post
-    getPostsByUserId(userId: ID): [Post]
+    getAllPostsByConversationParticipantIds(userId: ID, secondUserId: ID): [Post]
 
     comments: [Comment]
     comment(id: ID): Comment
@@ -109,28 +112,32 @@ const typeDefs = gql`
 
     createPost(
       message: String
-      userId: ID
+      senderId: ID
       images: [String]
     ): Post
 
     updatePost(
       id: ID
       message: String
-      userId: ID
+      senderId: ID
     ): Post
 
     deletePost(id: ID): Post
 
+    sendMessage(
+      messageInput: messageInput
+    ): Post
+
     createComment(
       message: String
-      userId: ID
+      senderId: ID
       postId: ID
     ): Comment
 
     updateComment(
       id: ID
       message: String
-      userId: ID
+      senderId: ID
       postId: ID
     ): Comment
 
@@ -138,13 +145,13 @@ const typeDefs = gql`
 
     createImage(
       url: String
-      userId: ID
+      senderId: ID
     ): Image
 
     updateImage(
       id: ID
       url: String
-      userId: ID
+      senderId: ID
     ): Image
 
     deleteImage(id: ID): Image

@@ -6,6 +6,7 @@ import { Alert, Button, Container, Stack, TextField } from "@mui/material";
 
 import { AuthContext } from "../context/authContext";
 import { useForm } from "../hooks";
+import { USER_ROLES } from "../utils/constants";
 
 const LOGIN_USER = gql`
   mutation login(
@@ -34,6 +35,12 @@ function Login() {
   const [loginUser, { loading }] = useMutation(LOGIN_USER, {
     update(_, { data: { loginUser: userData } }) {
       context.login(userData);
+      // if admin, navigate to admin page
+      // if (userData.role === USER_ROLES.ADMIN) {
+      //   navigate("/admin");
+      // } else {
+      //   navigate("/");
+      // }
       navigate("/");
     },
     onError({ graphQLErrors }) {

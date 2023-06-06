@@ -1,46 +1,66 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { useQuery, gql } from "@apollo/client";
+import { useNavigate } from "react-router-dom";
+import { Card, CardActionArea } from "@mui/material";
 
 import { AuthContext } from "../context/authContext";
 
 import useRole from "../hooks/useRole";
 
 // TODO get more info from users
+// TODO add pagination
 const GET_ALL_USERS = gql`
   query getAllUsers($id: ID!) {
-    getAllUsers (id: $id) {
+    getAllUsers(id: $id) {
       id
       email
+      fullname
+      
     }
   }
 `;
 
 const AdminDashboard = () => {
-  const { isAdmin, isClient, isLoggedOut } = useRole();
+  // if the user is not logged in, redirect to /login
   const { user } = useContext(AuthContext);
+  const { isAdmin, isClient, isLoggedOut } = useRole();
+  const navigate = useNavigate();
+  
+  // if (!user || isLoggedOut) {
+  //   return redirect("/login");
+  // }
 
-  if (!user || isLoggedOut) return <p>Not logged in</p>; // TODO handle logged out
+  // // if the user is logged in, but not admin, redirect to /client
+  // if (isClient) {
+  //   return redirect("/client");
+  // }
 
+  // if the user is logged in and admin, show the admin dashboard
   // if the user is admin, requiest all clients via getAllUsers
   // useQuery hook with GET_ALL_USERS query
   const { loading, error, data } = useQuery(GET_ALL_USERS, {
     variables: { id: user.user_id },
   });
-  const { getAllUsers } = data || { getAllUsers: [] };
 
   if (loading) return <p>Loading...</p>;
-
+  
   if (error) return <p>Error: {error.message}</p>;
 
-  console.log(getAllUsers);
+  const { getAllUsers } = data;
   
   return (
     <div>
       <h1>Admin Dashboard</h1>
-      {!loading && !error && getAllUsers.map(user => (
-        <div key={user.id}>
-          <p>{user.email}</p>
-        </div>
+      {getAllUsers.map(user => (
+        <Card key={user.id}>
+          <CardActionArea onClick={() => {
+            // navigate to /admin/client/:clientId
+            navigate(`/admin/client/${user.id}`);
+          }}>
+            <p>{user.fullname}</p>
+            <p>{user.email}</p>
+          </CardActionArea>
+        </Card>
       ))}
     </div>
   );
