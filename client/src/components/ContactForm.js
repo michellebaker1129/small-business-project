@@ -2,6 +2,8 @@ import React, { useState, useContext } from "react";
 import PropTypes from "prop-types";
 import { Alert, Button, Stack, TextField } from "@mui/material";
 import { useMutation, gql } from "@apollo/client";
+import { blue } from "@mui/material/colors";
+import { IoSendSharp } from "react-icons/io5";
 
 import { useForm } from "../hooks";
 import { AuthContext } from "../context/authContext";
@@ -68,22 +70,25 @@ function ContactForm({ messageParticipantId }) {
   }
 
   return (
-    <Stack spacing={2}>
-      <TextField
-        label="Message"
-        name="message"
-        onChange={onChange}
-        multiline
-      />
+    <>
       {errors.length > 0 && errors.map((error) => (
         <Alert severity="error" key={error}>
           {error.message}
         </Alert>
       ))}
-      <Button onClick={submitForm} variant="contained">
-        Send
-      </Button>
-    </Stack>
+      <Stack sx={{ bgcolor: blue[50], padding: "10px" }} spacing={2} direction="row">
+        <TextField
+          label="Message"
+          name="message"
+          onChange={onChange}
+          sx={{ flex: 1 }}
+          multiline
+        />
+        <Button onClick={submitForm} variant="contained">
+          Send <span style={{marginLeft: "10px", fontSize: "1rem"}}><IoSendSharp /></span>
+        </Button>
+      </Stack>
+    </>
   );
 }
 

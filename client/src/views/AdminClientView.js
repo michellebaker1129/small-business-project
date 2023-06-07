@@ -1,7 +1,8 @@
 import React, { useContext } from "react";
 import { useQuery, gql } from "@apollo/client";
 import { useParams } from "react-router-dom";
-import { AppBar, Toolbar } from "@mui/material";
+import { AppBar, Box, Button, Container, Toolbar, Typography } from "@mui/material";
+import { IoChevronBackOutline } from "react-icons/io5";
 
 import { AuthContext } from "../context/authContext";
 import { USER_ROLES } from "../utils/constants";
@@ -22,10 +23,6 @@ const GET_USER_BY_ID = gql`
   }
 `;
 
-// TODO render messages that were sent to the client or received from the client
-// TODO create query that will handle the messages fetching
-// - query will have a safeguard that will check if the user is admin or client
-
 const AdminClientView = () => {
   const { clientId } = useParams();
   const { user } = useContext(AuthContext);
@@ -42,11 +39,20 @@ const AdminClientView = () => {
   
   // render client info
   return (
-    <div>
-      <h1>Client Info</h1>
-      <p>{getUserById.id}</p>
-      <p>{getUserById.fullname}</p>
-      <p>{getUserById.email}</p>
+    <Container sx={{marginTop: "20px"}}>
+      <Button href="/admin"><IoChevronBackOutline /> Back</Button>
+
+      <Box sx={{display: "flex", justifyContent: "space-between"}}>
+        <Box>
+          <Typography variant="h5">{getUserById.fullname}</Typography>
+          <Typography variant="caption">{getUserById.email}</Typography>
+        </Box>
+
+        <Box sx={{ textAlign: "right"}}>
+          <Typography variant="h5">{user.fullname}</Typography>
+          <Typography variant="caption">{user.email}</Typography>
+        </Box>
+      </Box>
 
       <MessageFeed messageParticipantId={clientId} />
 
@@ -54,7 +60,7 @@ const AdminClientView = () => {
         <ContactForm messageParticipantId={clientId} />
       </AppBar>
       <Toolbar />
-    </div>
+    </Container>
   );
 };
 

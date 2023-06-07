@@ -1,7 +1,9 @@
 import React, { useContext } from "react";
 import PropTypes from "prop-types";
 import { useQuery, gql } from "@apollo/client";
-import { Stack } from "@mui/material";
+import { Box, Stack } from "@mui/material";
+import { blue } from "@mui/material/colors";
+import { MdMessage } from "react-icons/md";
 
 import { AuthContext } from "../context/authContext";
 
@@ -58,6 +60,23 @@ const MessageFeed = ({ messageParticipantId }) => {
 
   const { getAllPostsByConversationParticipantIds, getUserById } = data;
 
+  if (getAllPostsByConversationParticipantIds.length === 0) {
+    return <Box style={{
+      textAlign: "center",
+      padding: "3rem 0",
+      border: "1px dashed #ccc",
+      fontStyle: "italic",
+      borderRadius: "10px",
+      maxWidth: "50vw",
+      margin: "1rem auto",
+      color: blue[300],
+      marginBottom: "5rem"
+    }}>
+      <p style={{ fontSize: "10rem", margin: 0, color: blue[100]}}><MdMessage /></p>
+      No messages yet. Add the first message to {getUserById.fullname}!
+    </Box>;
+  }
+
   // map over posts and add sender and receiver info to each post
   const posts = getAllPostsByConversationParticipantIds.map((post) => {
     const newPost = { ...post };
@@ -72,7 +91,7 @@ const MessageFeed = ({ messageParticipantId }) => {
   });
 
   return (
-    <Stack>
+    <Stack spacing={1}>
       {posts.map((message) => (
         <Message key={message.id} message={message} />
       ))}

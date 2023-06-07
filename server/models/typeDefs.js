@@ -1,6 +1,8 @@
 const gql = require("graphql-tag");
 
 const typeDefs = gql`
+  scalar Date
+
   type Image {
     id: ID
     url: String
@@ -19,7 +21,7 @@ const typeDefs = gql`
     message: String
     senderId: ID
     receiverId: ID
-    createdAt: String
+    createdAt: Date
   }
 
   type User {
