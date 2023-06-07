@@ -6,21 +6,21 @@ const Message = ({ message }) => {
     <div>
       {/* TODO: maybe use typography from material-ui */}
       <p>{message.message}</p>
-      <p>{message.senderId}</p>
-      <p>{message.receiverId}</p>
+      <p>{message.sender.fullname}</p>
+      <p>{message.receiver.fullname}</p>
       <p>{message.createdAt}</p>
     </div>
   );
 };
 
 Message.propTypes = {
-  message: {
+  message: PropTypes.shape({
     id: PropTypes.string.isRequired,
     message: PropTypes.string.isRequired,
-    senderId: PropTypes.string.isRequired,
-    receiverId: PropTypes.string.isRequired,
+    sender: PropTypes.object.isRequired,
+    receiver: PropTypes.object.isRequired,
     createdAt: PropTypes.string.isRequired
-  }.isRequired
+  }).isRequired
 };
 
 export default Message;

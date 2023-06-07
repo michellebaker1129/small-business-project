@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 import { AppBar, Toolbar } from "@mui/material";
 
 import { AuthContext } from "../context/authContext";
+import { USER_ROLES } from "../utils/constants";
 
 import ContactForm from "../components/ContactForm";
 import MessageFeed from "../components/MessageFeed";
@@ -12,8 +13,8 @@ import MessageFeed from "../components/MessageFeed";
 // get admin id from useContext AuthContext (../context/authContext.js)
 // get client info from graphql using a query that has safeguard
 const GET_USER_BY_ID = gql`
-  query getUserById($clientId: ID!, $adminId: ID!) {
-    getUserById(clientId: $clientId, adminId: $adminId) {
+  query getUserById($clientId: ID!, $adminId: ID!, $userIsAdmin: Boolean!) {
+    getUserById(clientId: $clientId, adminId: $adminId, userIsAdmin: $userIsAdmin) {
       id
       email
       fullname
@@ -30,7 +31,7 @@ const AdminClientView = () => {
   const { user } = useContext(AuthContext);
 
   const { loading, error, data } = useQuery(GET_USER_BY_ID, {
-    variables: { adminId: user.user_id, clientId },
+    variables: { adminId: user.user_id, clientId, userIsAdmin: user.role === USER_ROLES.ADMIN },
   });
 
   if (loading) return <p>Loading...</p>;
@@ -47,10 +48,10 @@ const AdminClientView = () => {
       <p>{getUserById.fullname}</p>
       <p>{getUserById.email}</p>
 
-      <MessageFeed clientId={clientId} />
+      <MessageFeed messageParticipantId={clientId} />
 
       <AppBar position="fixed" sx={{ top: "auto", bottom: 0 }}>
-        <ContactForm clientId={clientId} />
+        <ContactForm messageParticipantId={clientId} />
       </AppBar>
       <Toolbar />
     </div>

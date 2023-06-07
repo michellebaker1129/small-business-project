@@ -8,7 +8,7 @@ import { AuthContext } from "../context/authContext";
 import { NotificationContext } from "../context/notificationContext";
 
 const propTypes = {
-  clientId: PropTypes.string.isRequired,
+  messageParticipantId: PropTypes.string.isRequired,
 };
 
 const SEND_MESSAGE = gql`
@@ -27,7 +27,7 @@ const SEND_MESSAGE = gql`
   }
 `;
 
-function ContactForm({ clientId }) {
+function ContactForm({ messageParticipantId }) {
   const [errors, setErrors] = useState([]);
   const { user } = useContext(AuthContext);
   const { setNotification } = useContext(NotificationContext);
@@ -50,8 +50,8 @@ function ContactForm({ clientId }) {
     variables: {
       messageInput: {
         message: values.message,
-        senderId: clientId,
-        receiverId: user.user_id,
+        senderId: user.user_id,
+        receiverId: messageParticipantId,
       },
     },
   });

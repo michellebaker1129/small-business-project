@@ -29,7 +29,7 @@ const resolvers = {
       return clients;
     },
     getUserById: async (_, args) => {
-      const { clientId, adminId } = args;
+      const { clientId, adminId, userIsAdmin } = args;
       // check if admin exists
       const admin = await User.findById(adminId);
       if (!admin) {
@@ -47,22 +47,22 @@ const resolvers = {
       if (!client) { 
         throw new Error(`User with ID ${clientId} not found`);
       }
-      return client;
+      return userIsAdmin ? client : admin;
     },
 
     posts: async () => await Post.find({}),
     post: async (_, args) => await Post.findById(args.id),
     getAllPostsByConversationParticipantIds: async (_, args) => {
       // TODO add pagination
-      const { userId, secondUserId } = args;
+      const { clientId, adminId } = args;
 
       const posts = await Post.find({
         $or: [
-          { senderId: userId, receiverId: secondUserId },
-          { senderId: secondUserId, receiverId: userId },
+          { senderId: clientId, receiverId: adminId },
+          { senderId: adminId, receiverId: clientId },
         ],
       })
-        .sort({ createdAt: -1 });
+        .sort({ createdAt: 1 });
       
       return posts;
     },
@@ -129,6 +129,7 @@ const resolvers = {
         {
           user_id: newUser._id,
           role: newUser.role,
+          fullname: newUser.fullname,
           email,
         },
         process.env.JWT_STRING || "UNSAFE_STRING",
@@ -144,6 +145,7 @@ const resolvers = {
 
       return {
         ...res._doc,
+        fullname: res.fullname,
         id: res._id,
       };
     },
@@ -170,6 +172,7 @@ const resolvers = {
         {
           user_id: foundUser._id,
           role: foundUser.role,
+          fullname: foundUser.fullname,
           email,
         },
         process.env.JWT_STRING || "UNSAFE_STRING",
@@ -182,6 +185,7 @@ const resolvers = {
 
       return {
         ...foundUser._doc,
+        fullname: foundUser.fullname,
         id: foundUser._id,
       };
     },
@@ -252,6 +256,7 @@ const resolvers = {
         senderId,
         message,
         receiverId,
+        createdAt: new Date(),
       });
       
       // save message to sender and receiver
@@ -273,6 +278,11 @@ const resolvers = {
         throw new Error(`Post with ID ${id} not found`);
       }
       return deletedPost;
+    },
+
+    deleteAllPosts: async () => {
+      await Post.deleteMany({});
+      return true;
     },
 
     createComment: async (_, { message, userId, postId }) => {
