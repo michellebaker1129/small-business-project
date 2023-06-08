@@ -1,6 +1,8 @@
 const gql = require("graphql-tag");
 
 const typeDefs = gql`
+  scalar Date
+
   type Image {
     id: ID
     url: String
@@ -19,7 +21,7 @@ const typeDefs = gql`
     message: String
     senderId: ID
     receiverId: ID
-    createdAt: String
+    createdAt: Date
   }
 
   type User {
@@ -60,11 +62,11 @@ const typeDefs = gql`
     users: [User]
     user(id: ID): User
     getAllUsers(id: ID): [User]
-    getUserById(clientId: ID, adminId: ID): User
+    getUserById(clientId: ID, adminId: ID, userIsAdmin: Boolean): User
 
     posts: [Post]
     post(id: ID): Post
-    getAllPostsByConversationParticipantIds(userId: ID, secondUserId: ID): [Post]
+    getAllPostsByConversationParticipantIds(clientId: ID, adminId: ID): [Post]
 
     comments: [Comment]
     comment(id: ID): Comment
@@ -123,6 +125,8 @@ const typeDefs = gql`
     ): Post
 
     deletePost(id: ID): Post
+
+    deleteAllPosts: Boolean
 
     sendMessage(
       messageInput: messageInput

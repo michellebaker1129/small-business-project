@@ -1,9 +1,11 @@
 import React, { useContext } from "react";
 import { useQuery, gql } from "@apollo/client";
 import { useParams } from "react-router-dom";
-import { AppBar, Toolbar } from "@mui/material";
+import { AppBar, Box, Button, Container, Toolbar, Typography } from "@mui/material";
+import { IoChevronBackOutline } from "react-icons/io5";
 
 import { AuthContext } from "../context/authContext";
+import { USER_ROLES } from "../utils/constants";
 
 import ContactForm from "../components/ContactForm";
 import MessageFeed from "../components/MessageFeed";
@@ -12,8 +14,8 @@ import MessageFeed from "../components/MessageFeed";
 // get admin id from useContext AuthContext (../context/authContext.js)
 // get client info from graphql using a query that has safeguard
 const GET_USER_BY_ID = gql`
-  query getUserById($clientId: ID!, $adminId: ID!) {
-    getUserById(clientId: $clientId, adminId: $adminId) {
+  query getUserById($clientId: ID!, $adminId: ID!, $userIsAdmin: Boolean!) {
+    getUserById(clientId: $clientId, adminId: $adminId, userIsAdmin: $userIsAdmin) {
       id
       email
       fullname
@@ -21,16 +23,12 @@ const GET_USER_BY_ID = gql`
   }
 `;
 
-// TODO render messages that were sent to the client or received from the client
-// TODO create query that will handle the messages fetching
-// - query will have a safeguard that will check if the user is admin or client
-
 const AdminClientView = () => {
   const { clientId } = useParams();
   const { user } = useContext(AuthContext);
 
   const { loading, error, data } = useQuery(GET_USER_BY_ID, {
-    variables: { adminId: user.user_id, clientId },
+    variables: { adminId: user.user_id, clientId, userIsAdmin: user.role === USER_ROLES.ADMIN },
   });
 
   if (loading) return <p>Loading...</p>;
@@ -41,19 +39,28 @@ const AdminClientView = () => {
   
   // render client info
   return (
-    <div>
-      <h1>Client Info</h1>
-      <p>{getUserById.id}</p>
-      <p>{getUserById.fullname}</p>
-      <p>{getUserById.email}</p>
+    <Container sx={{marginTop: "20px"}}>
+      <Button href="/admin"><IoChevronBackOutline /> Back</Button>
 
-      <MessageFeed clientId={clientId} />
+      <Box sx={{display: "flex", justifyContent: "space-between"}}>
+        <Box>
+          <Typography variant="h5">{getUserById.fullname}</Typography>
+          <Typography variant="caption">{getUserById.email}</Typography>
+        </Box>
+
+        <Box sx={{ textAlign: "right"}}>
+          <Typography variant="h5">{user.fullname}</Typography>
+          <Typography variant="caption">{user.email}</Typography>
+        </Box>
+      </Box>
+
+      <MessageFeed messageParticipantId={clientId} />
 
       <AppBar position="fixed" sx={{ top: "auto", bottom: 0 }}>
-        <ContactForm clientId={clientId} />
+        <ContactForm messageParticipantId={clientId} />
       </AppBar>
       <Toolbar />
-    </div>
+    </Container>
   );
 };
 
