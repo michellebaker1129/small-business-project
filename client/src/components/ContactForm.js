@@ -8,6 +8,7 @@ import { IoSendSharp } from "react-icons/io5";
 import { useForm } from "../hooks";
 import { AuthContext } from "../context/authContext";
 import { NotificationContext } from "../context/notificationContext";
+import { MessageContext } from "../context/messageContext";
 
 const propTypes = {
   messageParticipantId: PropTypes.string.isRequired,
@@ -33,6 +34,7 @@ function ContactForm({ messageParticipantId }) {
   const [errors, setErrors] = useState([]);
   const { user } = useContext(AuthContext);
   const { setNotification } = useContext(NotificationContext);
+  const { addMessage } = useContext(MessageContext);
 
   // TODO handle images
   const { onChange, onSubmit, values, clearForm } = useForm(handleSubmit, {
@@ -45,6 +47,7 @@ function ContactForm({ messageParticipantId }) {
         type: "success",
         message: "Message sent successfully",
       });
+      addMessage(messageData);
     },
     onError({ graphQLErrors }) {
       setErrors(graphQLErrors);

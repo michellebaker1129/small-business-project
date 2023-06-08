@@ -1,12 +1,15 @@
-const { ApolloError } = require("apollo-server-errors");
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
+import { ApolloError } from "apollo-server-errors";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import { PubSub, withFilter } from 'graphql-subscriptions';
 
-const { User } = require("../models/User.js");
-const { Post } = require("../models/Post.js");
-const { Comment } = require("../models/Comment.js");
-const { Image } = require("../models/Image.js");
-const { USER_ALREADY_EXISTS, USER_DOESNT_EXIST, PASSWORD_SALT, INCORRECT_PASSWORD, USER_ROLES } = require("../utils/constants.js");
+import { User } from "../models/User.js";
+import { Post } from "../models/Post.js";
+import { Comment } from "../models/Comment.js";
+import { Image } from "../models/Image.js";
+import { USER_ALREADY_EXISTS, USER_DOESNT_EXIST, PASSWORD_SALT, INCORRECT_PASSWORD, USER_ROLES } from "../utils/constants.js";
+
+const pubsub = new PubSub();
 
 // GraphQL Resolvers
 const resolvers = {
@@ -261,6 +264,8 @@ const resolvers = {
       
       // save message to sender and receiver
       await newMessage.save();
+
+      pubsub.publish("MESSAGE_SENT", { messageSent: newMessage });
     },
 
     updatePost: async (_, args) => {
@@ -338,6 +343,16 @@ const resolvers = {
       return deletedImage;
     },
   },
+  Subscription: {
+    messageSent: {
+      subscribe: withFilter(
+        () => pubsub.asyncIterator(["MESSAGE_SENT"]),
+        (payload, variables) => {
+          return payload.messageSent.receiverId === variables.receiverId;
+        }
+      )
+    }
+  }
 };
 
-module.exports = { resolvers };
+export { resolvers };

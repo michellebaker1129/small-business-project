@@ -1,8 +1,8 @@
-const mongoose = require("mongoose");
+import { model } from "mongoose";
 
-const Image = mongoose.model("Image", {
+const Image = model("Image", {
   url: String,
   userId: String,
 });
 
-module.exports = { Image };
+export { Image };

@@ -1,6 +1,6 @@
-const mongoose = require("mongoose");
+import { model } from "mongoose";
 
-const User = mongoose.model("User", {
+const User = model("User", {
   fullname: { type: String },
   email: { type: String, unique: true },
   phoneNumber: { type: String },
@@ -17,4 +17,4 @@ const User = mongoose.model("User", {
   updatedAt: { type: String },
 });
 
-module.exports = { User };
+export { User };

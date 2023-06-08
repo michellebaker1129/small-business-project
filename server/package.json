@@ -9,6 +9,7 @@
     "dev": "nodemon server.js",
     "setup": "npm i"
   },
+  "type": "module",
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -19,6 +20,7 @@
     "client-portal-project": "file:",
     "dotenv": "^16.0.3",
     "graphql": "^16.6.0",
+    "graphql-subscriptions": "^2.0.0",
     "graphql-tag": "^2.12.6",
     "jsonwebtoken": "^9.0.0",
     "mongoose": "^7.0.1",
