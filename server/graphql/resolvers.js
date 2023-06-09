@@ -37,6 +37,9 @@ const resolvers = {
       });
       return clients;
     },
+    getAllAdmins: async (_, args) => {
+      return await User.find({ role: USER_ROLES.ADMIN });
+    },
     getUserById: async (_, args) => {
       const { clientId, adminId, userIsAdmin } = args;
       // check if admin exists
@@ -110,7 +113,7 @@ const resolvers = {
       return newUser;
     },
 
-    registerUser: async (_, { registerInput: { email, password } }) => {
+    registerUser: async (_, { registerInput: { email, password, fullname } }) => {
       // check if user exists
       const oldUser = await User.findOne({ email });
 
@@ -129,6 +132,7 @@ const resolvers = {
       const newUser = new User({
         email: email.toLowerCase(),
         password: hashedPassword,
+        fullname,
         role: USER_ROLES.CLIENT,
       });
 
@@ -281,8 +285,6 @@ const resolvers = {
         createdAt: new Date(),
       });
 
-      console.log(newMessage);
-
       // save message to sender and receiver
       await newMessage.save();
 
@@ -371,7 +373,7 @@ const resolvers = {
       subscribe: withFilter(
         () => pubsub.asyncIterator(["MESSAGE_SENT"]),
         (payload, variables) => {
-          return payload.messageSent.receiverId === variables.receiverId;
+          return payload.messageSent.receiverId === variables.clientId || payload.messageSent.senderId === variables.clientId;
         }
       ),
     },

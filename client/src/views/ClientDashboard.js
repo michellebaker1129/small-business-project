@@ -1,17 +1,30 @@
-import React from "react";
-// TODO get user from useContext (authContext)
+import React, { useContext } from "react";
+import Container from "@mui/material/Container";
 
-// TODO import getAllPostsByConversationParticipantIds
+import { AuthContext } from "../context/authContext";
+import { MessageContext } from "../context/messageContext";
+import { GET_ALL_POSTS_BY_CLIENT_ID } from "../graphql/queries";
 
-// TODO import messageFeed component and use on page, passing the adminId as messageParticipantId
-// TODO inport contactForm component and use on page, passing the adminId as messageParticipantId
+import MessageFeed from "../components/MessageFeed";
+import ContactForm from "../components/ContactForm";
 
 const ClientDashboard = () => {
-  // TODO get user from useContext (authContext)
+  const { user } = useContext(AuthContext);
+  const { recipient } = useContext(MessageContext);
 
-  return <div>
-    <h1>Client Dashboard</h1>
-  </div>;
+  if (!recipient) return <div>Loading...</div>;
+
+  return (
+    <div>
+      <h1>Client Dashboard</h1>
+
+      <Container>
+        <MessageFeed messageParticipant={recipient} />
+      </Container>
+
+      <ContactForm messageParticipant={recipient} />
+    </div>
+  );
 };
 
 export default ClientDashboard;

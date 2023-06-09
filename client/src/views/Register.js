@@ -8,12 +8,9 @@ import { AuthContext } from "../context/authContext";
 import { useForm } from "../hooks";
 
 const REGISTER_USER = gql`
-  mutation register(
-    $registerInput: registerInput!
-  ) {
-    registerUser(
-      registerInput: $registerInput
-    ) {
+  mutation register($registerInput: registerInput!) {
+    registerUser(registerInput: $registerInput) {
+      fullname
       email
       role
       token
@@ -28,6 +25,7 @@ function Register() {
 
   const { onChange, onSubmit, values } = useForm(registerUserCallback, {
     email: "",
+    fullname: "",
     password: "",
     confirmPassword: "",
   });
@@ -58,25 +56,36 @@ function Register() {
           name="email"
           type="email"
           onChange={onChange}
+          required
+        />
+        <TextField
+          label="Full Name"
+          name="fullname"
+          type="text"
+          onChange={onChange}
+          required
         />
         <TextField
           label="Password"
           name="password"
           type="password"
           onChange={onChange}
+          required
         />
         <TextField
           label="Confirm password"
           name="confirmPassword"
           type="password"
           onChange={onChange}
+          required
         />
       </Stack>
-      {errors.length > 0 && errors.map((error) => (
-        <Alert severity="error" key={error}>
-          {error.message}
-        </Alert>
-      ))}
+      {errors.length > 0 &&
+        errors.map((error) => (
+          <Alert severity="error" key={error}>
+            {error.message}
+          </Alert>
+        ))}
       <Button onClick={onSubmit} variant="contained">
         Register
       </Button>

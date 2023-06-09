@@ -6,41 +6,14 @@ import { blue } from "@mui/material/colors";
 import { MdMessage } from "react-icons/md";
 
 import { AuthContext } from "../context/authContext";
+import {
+  GET_ALL_POSTS_BY_CLIENT_ID,
+  NEW_MESSAGE_SUBSCRIPTION,
+} from "../graphql/queries";
 
 import { USER_ROLES } from "../utils/constants";
 
 import Message from "./Message";
-
-// TODO getUserById needs to handle all admins
-
-const GET_ALL_POSTS_BY_CLIENT_ID = gql`
-  query getAllPostsByClientId($clientId: ID!) {
-    getAllPostsByClientId(clientId: $clientId) {
-      id
-      receiverId
-      receiverFullname
-      senderId
-      senderFullname
-      message
-      createdAt
-    }
-  }
-`;
-
-// set up subscription to listen for new messages
-const NEW_MESSAGE_SUBSCRIPTION = gql`
-  subscription messageSent($receiverId: ID!) {
-    messageSent(receiverId: $receiverId) {
-      id
-      receiverId
-      receiverFullname
-      senderId
-      senderFullname
-      message
-      createdAt
-    }
-  }
-`;
 
 const MessageFeed = ({ messageParticipant }) => {
   const [messages, setMessages] = useState([]);
@@ -48,23 +21,12 @@ const MessageFeed = ({ messageParticipant }) => {
 
   if (!user) return null;
 
-  let clientId = null;
-  let adminId = null;
-  let userIsAdmin = user.role === USER_ROLES.ADMIN;
-
-  if (userIsAdmin) {
-    clientId = messageParticipant.id;
-    adminId = user.user_id;
-  }
-
-  if (!userIsAdmin) {
-    clientId = user.user_id;
-    adminId = messageParticipant.id;
-  }
+  const clientId =
+    user.role === USER_ROLES.ADMIN ? messageParticipant.id : user.user_id;
 
   // subscribe to new messages
   const { data: newMessageData } = useSubscription(NEW_MESSAGE_SUBSCRIPTION, {
-    variables: { receiverId: clientId },
+    variables: { clientId },
   });
 
   const { loading, error, data } = useQuery(GET_ALL_POSTS_BY_CLIENT_ID, {
@@ -111,13 +73,13 @@ const MessageFeed = ({ messageParticipant }) => {
         <p style={{ fontSize: "10rem", margin: 0, color: blue[100] }}>
           <MdMessage />
         </p>
-        No messages yet. Add the first message to {messageParticipant.fullname}!
+        No messages yet. Send the first message!
       </Box>
     );
   }
 
   return (
-    <Stack spacing={1}>
+    <Stack spacing={1} sx={{ marginBottom: "50px" }}>
       {messages.map((message) => (
         <Message key={message.id} message={message} />
       ))}

@@ -46,6 +46,7 @@ const typeDefs = gql`
     email: String
     password: String
     confirmPassword: String
+    fullname: String
     role: String
   }
 
@@ -65,6 +66,7 @@ const typeDefs = gql`
     user(id: ID): User
     getAllUsers(id: ID): [User]
     getUserById(clientId: ID, adminId: ID, userIsAdmin: Boolean): User
+    getAllAdmins: [User]
 
     posts: [Post]
     post(id: ID): Post
@@ -138,7 +140,7 @@ const typeDefs = gql`
   }
 
   type Subscription {
-    messageSent(receiverId: ID!): Post
+    messageSent(clientId: ID!): Post
   }
 `;
 
