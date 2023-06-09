@@ -7,7 +7,7 @@ const USER_ROLES = {
   CLIENT: "CLIENT"
 };
 
-module.exports = {
+export {
   PASSWORD_SALT,
   USER_ALREADY_EXISTS,
   USER_DOESNT_EXIST,

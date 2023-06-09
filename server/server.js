@@ -1,28 +1,89 @@
-const { ApolloServer } = require("@apollo/server");
-const { startStandaloneServer } = require("@apollo/server/standalone");
-const mongoose = require("mongoose");
-require("dotenv").config();
+import { ApolloServer } from '@apollo/server';
+import { expressMiddleware } from '@apollo/server/express4';
+import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
+import { createServer } from 'http';
+import express from 'express';
+import { makeExecutableSchema } from '@graphql-tools/schema';
+import { WebSocketServer } from 'ws';
+import { useServer } from 'graphql-ws/lib/use/ws';
+import bodyParser from 'body-parser';
+import cors from 'cors';
+import mongoose from "mongoose";
+import dotenv from "dotenv/config";
 
-const { resolvers } = require("./graphql/resolvers.js");
-const { typeDefs } = require("./models/typeDefs.js");
+import {resolvers} from './graphql/resolvers.js';
+import {typeDefs} from './models/typeDefs.js';
 
-const server = new ApolloServer({ typeDefs, resolvers });
+// Create the schema, which will be used separately by ApolloServer and
+// the WebSocket server.
+const schema = makeExecutableSchema({ typeDefs, resolvers });
 
-// Database connection
-mongoose
+// Create an Express app and HTTP server; we will attach both the WebSocket
+// server and the ApolloServer to this HTTP server.
+const app = express();
+const httpServer = createServer(app);
+const corsOptions = {
+  origin: 'http://localhost:3000',
+};
+
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
+  res.header('Access-Control-Request-Headers', 'Content-Type, Authorization');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.header('Access-Control-Allow-Credentials', 'true');
+  next();
+});
+
+app.options('/*', (_, res) => {
+  res.sendStatus(200);
+});
+
+await mongoose
   .connect(process.env.MONGO_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
   .then(() => {
-    console.log("Db Connected");
-
-    startStandaloneServer(server, {
-      listen: { port: process.env.PORT || 4000 },
-    }).then(({ url }) => {
-      console.log(`Server ready at ${url}`);
-    });
+    console.log(`Db Connected`);
   })
   .catch(err => {
     console.log(err.message);
   });
+
+// Create our WebSocket server using the HTTP server we just set up.
+const wsServer = new WebSocketServer({
+  server: httpServer,
+  path: '/graphql',
+});
+// Save the returned server's info so we can shutdown this server later
+const serverCleanup = useServer({ schema }, wsServer);
+
+// Set up ApolloServer.
+const server = new ApolloServer({
+  schema,
+  plugins: [
+    // Proper shutdown for the HTTP server.
+    ApolloServerPluginDrainHttpServer({ httpServer }),
+
+    // Proper shutdown for the WebSocket server.
+    {
+      async serverWillStart() {
+        return {
+          async drainServer() {
+            await serverCleanup.dispose();
+          },
+        };
+      },
+    },
+  ],
+});
+
+await server.start();
+app.use('/graphql', cors(corsOptions), bodyParser.json(), expressMiddleware(server));
+
+const PORT = process.env.PORT || 4000;
+// Now that our HTTP server is fully set up, we can listen to it.
+httpServer.listen(PORT, () => {
+  console.log(`Server is now running on http://localhost:${PORT}/graphql`);
+});

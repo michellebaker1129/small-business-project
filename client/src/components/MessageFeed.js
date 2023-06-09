@@ -1,6 +1,6 @@
-import React, { useContext } from "react";
+import React, { useMemo, useContext, useEffect, useState } from "react";
 import PropTypes from "prop-types";
-import { useQuery, gql } from "@apollo/client";
+import { useQuery, useSubscription, gql } from "@apollo/client";
 import { Box, Stack } from "@mui/material";
 import { blue } from "@mui/material/colors";
 import { MdMessage } from "react-icons/md";
@@ -27,7 +27,21 @@ const COMBINED_QUERY = gql`
   }
 `;
 
+// set up subscription to listen for new messages
+const NEW_MESSAGE_SUBSCRIPTION = gql`
+  subscription messageSent($receiverId: ID!) {
+    messageSent(receiverId: $receiverId) {
+      id
+      receiverId
+      senderId
+      message
+      createdAt
+    }
+  }
+`;
+
 const MessageFeed = ({ messageParticipantId }) => {
+  const [messages, setMessages] = useState([]);
   const { user } = useContext(AuthContext);
   
   if (!user) return null;
@@ -46,6 +60,11 @@ const MessageFeed = ({ messageParticipantId }) => {
     adminId = messageParticipantId;
   }
 
+  // subscribe to new messages
+  const { data: newMessageData } = useSubscription(NEW_MESSAGE_SUBSCRIPTION, {
+    variables: { receiverId: clientId },
+  });
+
   const { loading, error, data } = useQuery(COMBINED_QUERY, {
     variables: { 
       clientId,
@@ -54,13 +73,27 @@ const MessageFeed = ({ messageParticipantId }) => {
     },
   });
 
+  const { getAllPostsByConversationParticipantIds, getUserById } = data || {};
+
+  // add query results to messages array
+  useEffect(() => {
+    if (getAllPostsByConversationParticipantIds) {
+      setMessages(getAllPostsByConversationParticipantIds);
+    }
+  }, [getAllPostsByConversationParticipantIds]);
+
+  // add new message to messages array
+  useEffect(() => {
+    if (newMessageData) {
+      setMessages((prev) => [...prev, newMessageData.messageSent]);
+    }
+  }, [newMessageData]);
+
   if (loading) return <p>Loading...</p>;
   
   if (error) return <p>Error: {error.message}</p>;
 
-  const { getAllPostsByConversationParticipantIds, getUserById } = data;
-
-  if (getAllPostsByConversationParticipantIds.length === 0) {
+  if (messages.length === 0) {
     return <Box style={{
       textAlign: "center",
       padding: "3rem 0",
@@ -78,7 +111,7 @@ const MessageFeed = ({ messageParticipantId }) => {
   }
 
   // map over posts and add sender and receiver info to each post
-  const posts = getAllPostsByConversationParticipantIds.map((post) => {
+  const posts = messages.map((post) => {
     const newPost = { ...post };
     if (newPost.senderId === clientId) {
       newPost.sender = getUserById;

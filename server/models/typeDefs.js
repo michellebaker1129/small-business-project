@@ -1,4 +1,4 @@
-const gql = require("graphql-tag");
+import gql from "graphql-tag";
 
 const typeDefs = gql`
   scalar Date
@@ -160,6 +160,10 @@ const typeDefs = gql`
 
     deleteImage(id: ID): Image
   }
+
+  type Subscription {
+    messageSent(receiverId: ID!): Post
+  }
 `;
 
-module.exports = { typeDefs };
+export { typeDefs };

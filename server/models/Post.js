@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const Post = mongoose.model("Post", {
   message: String,
@@ -7,4 +7,4 @@ const Post = mongoose.model("Post", {
   createdAt: Date,
 });
 
-module.exports = { Post };
+export { Post };
