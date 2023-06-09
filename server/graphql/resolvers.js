@@ -65,7 +65,8 @@ const resolvers = {
           { senderId: adminId, receiverId: clientId },
         ],
       })
-        .sort({ createdAt: 1 });
+        .sort({ createdAt: 1 })
+        .limit(10); // pagination
       
       return posts;
     },
@@ -221,15 +222,18 @@ const resolvers = {
       const newImages = [];
 
       // TODO maybe reuse this?
-      for (let i = 0; i < imageUrls.length; i++) {
+      const createImage = async (url) => {
         const newImage = new Image({
-          url: imageUrls[i], // /images/1234.jpg
+          url,
           userId,
         });
         await newImage.save();
         newImages.push(newImage);
-      }
+      };
 
+  for (let i = 0; i < imageUrls.length; i++) {
+    await createImage(imageUrls[i]);
+  }
       const newPost = new Post({
         message,
         userId,
