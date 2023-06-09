@@ -22,6 +22,22 @@ const schema = makeExecutableSchema({ typeDefs, resolvers });
 // server and the ApolloServer to this HTTP server.
 const app = express();
 const httpServer = createServer(app);
+const corsOptions = {
+  origin: 'http://localhost:3000',
+};
+
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
+  res.header('Access-Control-Request-Headers', 'Content-Type, Authorization');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.header('Access-Control-Allow-Credentials', 'true');
+  next();
+});
+
+app.options('/*', (_, res) => {
+  res.sendStatus(200);
+});
 
 await mongoose
   .connect(process.env.MONGO_URI, {
@@ -35,37 +51,10 @@ await mongoose
     console.log(err.message);
   });
 
-const findUser = async (authToken) => {
-  // TODO Find a user by their auth token
-};
-
-const getDynamicContext = async (ctx, msg, args) => {
-  if (ctx.connectionParams.authentication) {
-    const currentUser = await findUser(ctx.connectionParams.authentication);
-    return { currentUser };
-  }
-  // Let the resolvers know we don't have a current user so they can
-  // throw the appropriate error
-  return { currentUser: null };
-};
-
 // Create our WebSocket server using the HTTP server we just set up.
 const wsServer = new WebSocketServer({
   server: httpServer,
   path: '/graphql',
-  context: async (ctx, msg, args) => {
-    // This will be run every time the client sends a subscription request
-    return getDynamicContext(ctx, msg, args);
-  },
-  onConnect: async (ctx) => {
-    if (tokenIsNotValid(ctx.connectionParams)) {
-      throw new Error("Not authorized");
-    }
-  },
-  onDisconnect(ctx, code, reason) {
-    console.log('Disconnected!');
-  },
-
 });
 // Save the returned server's info so we can shutdown this server later
 const serverCleanup = useServer({ schema }, wsServer);
@@ -91,9 +80,9 @@ const server = new ApolloServer({
 });
 
 await server.start();
-app.use('/graphql', cors(), bodyParser.json(), expressMiddleware(server));
+app.use('/graphql', cors(corsOptions), bodyParser.json(), expressMiddleware(server));
 
-const PORT = 4000;
+const PORT = process.env.PORT || 4000;
 // Now that our HTTP server is fully set up, we can listen to it.
 httpServer.listen(PORT, () => {
   console.log(`Server is now running on http://localhost:${PORT}/graphql`);

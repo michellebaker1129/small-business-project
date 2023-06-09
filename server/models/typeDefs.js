@@ -160,6 +160,10 @@ const typeDefs = gql`
 
     deleteImage(id: ID): Image
   }
+
+  type Subscription {
+    messageSent(receiverId: ID!): Post
+  }
 `;
 
 export { typeDefs };

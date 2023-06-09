@@ -1,12 +1,11 @@
-import React, { useMemo, useContext, useEffect } from "react";
+import React, { useMemo, useContext, useEffect, useState } from "react";
 import PropTypes from "prop-types";
-import { useQuery, gql } from "@apollo/client";
+import { useQuery, useSubscription, gql } from "@apollo/client";
 import { Box, Stack } from "@mui/material";
 import { blue } from "@mui/material/colors";
 import { MdMessage } from "react-icons/md";
 
 import { AuthContext } from "../context/authContext";
-import { MessageContext } from "../context/messageContext";
 
 import { USER_ROLES } from "../utils/constants";
 
@@ -28,9 +27,22 @@ const COMBINED_QUERY = gql`
   }
 `;
 
+// set up subscription to listen for new messages
+const NEW_MESSAGE_SUBSCRIPTION = gql`
+  subscription messageSent($receiverId: ID!) {
+    messageSent(receiverId: $receiverId) {
+      id
+      receiverId
+      senderId
+      message
+      createdAt
+    }
+  }
+`;
+
 const MessageFeed = ({ messageParticipantId }) => {
+  const [messages, setMessages] = useState([]);
   const { user } = useContext(AuthContext);
-  const { messages, replaceMessages } = useContext(MessageContext);
   
   if (!user) return null;
 
@@ -48,6 +60,11 @@ const MessageFeed = ({ messageParticipantId }) => {
     adminId = messageParticipantId;
   }
 
+  // subscribe to new messages
+  const { data: newMessageData } = useSubscription(NEW_MESSAGE_SUBSCRIPTION, {
+    variables: { receiverId: clientId },
+  });
+
   const { loading, error, data } = useQuery(COMBINED_QUERY, {
     variables: { 
       clientId,
@@ -58,39 +75,25 @@ const MessageFeed = ({ messageParticipantId }) => {
 
   const { getAllPostsByConversationParticipantIds, getUserById } = data || {};
 
-  // update messages in context
+  // add query results to messages array
   useEffect(() => {
-    if (getAllPostsByConversationParticipantIds && messages.length === 0) {
-      replaceMessages(getAllPostsByConversationParticipantIds);
+    if (getAllPostsByConversationParticipantIds) {
+      setMessages(getAllPostsByConversationParticipantIds);
     }
-  }, [messages, getAllPostsByConversationParticipantIds]);
+  }, [getAllPostsByConversationParticipantIds]);
 
-  const messagesToRender = useMemo(() => {
-    // if messages has more data, use it for rendering, otherwise use data from query
-    if (!messages && !getAllPostsByConversationParticipantIds) {
-      return [];
+  // add new message to messages array
+  useEffect(() => {
+    if (newMessageData) {
+      setMessages((prev) => [...prev, newMessageData.messageSent]);
     }
-
-    if (messages && !getAllPostsByConversationParticipantIds) {
-      return messages;
-    }
-
-    if (!messages && getAllPostsByConversationParticipantIds) {
-      return getAllPostsByConversationParticipantIds;
-    }
-    
-    // if (messages || getAllPostsByConversationParticipantIds) {
-    //   if (messages.length > getAllPostsByConversationParticipantIds.length) {
-    //     return messages;
-    //   }
-    // }
-  }, [messages, getAllPostsByConversationParticipantIds]);
+  }, [newMessageData]);
 
   if (loading) return <p>Loading...</p>;
   
   if (error) return <p>Error: {error.message}</p>;
 
-  if (messagesToRender.length === 0) {
+  if (messages.length === 0) {
     return <Box style={{
       textAlign: "center",
       padding: "3rem 0",
@@ -108,7 +111,7 @@ const MessageFeed = ({ messageParticipantId }) => {
   }
 
   // map over posts and add sender and receiver info to each post
-  const posts = messagesToRender.map((post) => {
+  const posts = messages.map((post) => {
     const newPost = { ...post };
     if (newPost.senderId === clientId) {
       newPost.sender = getUserById;

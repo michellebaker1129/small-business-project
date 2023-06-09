@@ -266,6 +266,8 @@ const resolvers = {
       await newMessage.save();
 
       pubsub.publish("MESSAGE_SENT", { messageSent: newMessage });
+
+      return newMessage;
     },
 
     updatePost: async (_, args) => {
