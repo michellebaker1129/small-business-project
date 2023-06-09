@@ -20,7 +20,9 @@ const typeDefs = gql`
     id: ID
     message: String
     senderId: ID
+    senderFullname: String
     receiverId: ID
+    receiverFullname: String
     createdAt: Date
   }
 
@@ -44,6 +46,7 @@ const typeDefs = gql`
     email: String
     password: String
     confirmPassword: String
+    fullname: String
     role: String
   }
 
@@ -63,14 +66,15 @@ const typeDefs = gql`
     user(id: ID): User
     getAllUsers(id: ID): [User]
     getUserById(clientId: ID, adminId: ID, userIsAdmin: Boolean): User
+    getAllAdmins: [User]
 
     posts: [Post]
     post(id: ID): Post
-    getAllPostsByConversationParticipantIds(clientId: ID, adminId: ID): [Post]
+    getAllPostsByClientId(clientId: ID): [Post]
 
     comments: [Comment]
     comment(id: ID): Comment
-    
+
     images: [Image]
     image(id: ID): Image
   }
@@ -112,57 +116,31 @@ const typeDefs = gql`
 
     deleteUser(id: ID): User
 
-    createPost(
-      message: String
-      senderId: ID
-      images: [String]
-    ): Post
+    createPost(message: String, senderId: ID, images: [String]): Post
 
-    updatePost(
-      id: ID
-      message: String
-      senderId: ID
-    ): Post
+    updatePost(id: ID, message: String, senderId: ID): Post
 
     deletePost(id: ID): Post
 
     deleteAllPosts: Boolean
 
-    sendMessage(
-      messageInput: messageInput
-    ): Post
+    sendMessage(messageInput: messageInput): Post
 
-    createComment(
-      message: String
-      senderId: ID
-      postId: ID
-    ): Comment
+    createComment(message: String, senderId: ID, postId: ID): Comment
 
-    updateComment(
-      id: ID
-      message: String
-      senderId: ID
-      postId: ID
-    ): Comment
+    updateComment(id: ID, message: String, senderId: ID, postId: ID): Comment
 
     deleteComment(id: ID): Comment
 
-    createImage(
-      url: String
-      senderId: ID
-    ): Image
+    createImage(url: String, senderId: ID): Image
 
-    updateImage(
-      id: ID
-      url: String
-      senderId: ID
-    ): Image
+    updateImage(id: ID, url: String, senderId: ID): Image
 
     deleteImage(id: ID): Image
   }
 
   type Subscription {
-    messageSent(receiverId: ID!): Post
+    messageSent(clientId: ID!): Post
   }
 `;
 

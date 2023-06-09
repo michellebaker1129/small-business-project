@@ -6,6 +6,7 @@ import Login from "./views/Login";
 import Register from "./views/Register";
 import AdminDashboard from "./views/AdminDashboard";
 import AdminClientView from "./views/AdminClientView";
+import ClientDashboard from "./views/ClientDashboard";
 
 import NavBar from "./components/NavBar";
 import Notification from "./components/Notification";
@@ -22,6 +23,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/admin/client/:clientId" element={<AdminClientView />} />
+        <Route path="/dashboard" element={<ClientDashboard />} />
 
         <Route path="*" element={<h1>Not Found</h1>} />
       </Routes>

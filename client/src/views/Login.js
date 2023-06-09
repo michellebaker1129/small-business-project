@@ -64,12 +64,14 @@ function Login() {
           name="email"
           type="email"
           onChange={onChange}
+          required
         />
         <TextField
           label="Password"
           name="password"
           type="password"
           onChange={onChange}
+          required
         />
       </Stack>
       {errors.length > 0 && errors.map((error) => (
