@@ -11,7 +11,7 @@ import { NotificationContext } from "../context/notificationContext";
 import { MessageContext } from "../context/messageContext";
 
 const propTypes = {
-  messageParticipantId: PropTypes.string.isRequired,
+  messageParticipant: PropTypes.object.isRequired,
 };
 
 const SEND_MESSAGE = gql`
@@ -25,12 +25,14 @@ const SEND_MESSAGE = gql`
       message
       createdAt
       senderId
+      senderFullname
       receiverId
+      receiverFullname
     }
   }
 `;
 
-function ContactForm({ messageParticipantId }) {
+function ContactForm({ messageParticipant }) {
   const [errors, setErrors] = useState([]);
   const { user } = useContext(AuthContext);
   const { setNotification } = useContext(NotificationContext);
@@ -56,7 +58,7 @@ function ContactForm({ messageParticipantId }) {
       messageInput: {
         message: values.message,
         senderId: user.user_id,
-        receiverId: messageParticipantId,
+        receiverId: messageParticipant.id,
       },
     },
   });

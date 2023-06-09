@@ -54,10 +54,10 @@ const AdminClientView = () => {
         </Box>
       </Box>
 
-      <MessageFeed messageParticipantId={clientId} />
+      <MessageFeed messageParticipant={{ fullname: getUserById.fullname, id: getUserById.id }} />
 
       <AppBar position="fixed" sx={{ top: "auto", bottom: 0 }}>
-        <ContactForm messageParticipantId={clientId} />
+        <ContactForm messageParticipant={{ fullname: getUserById.fullname, id: getUserById.id }} />
       </AppBar>
       <Toolbar />
     </Container>

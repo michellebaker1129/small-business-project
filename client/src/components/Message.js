@@ -2,11 +2,8 @@ import React from "react";
 import PropTypes from "prop-types";
 import dayjs from "dayjs";
 import TimeAgo from "javascript-time-ago";
-import en from "javascript-time-ago/locale/en";
 import { Avatar, Box, Typography } from "@mui/material";
 import { blue } from "@mui/material/colors";
-
-TimeAgo.addDefaultLocale(en);
 
 const Message = ({ message }) => {
   const timeAgo = new TimeAgo("en-US");
@@ -24,18 +21,23 @@ const Message = ({ message }) => {
   };
 
   return (
-    <Box sx={{ border: "1px solid #ccc", padding: "10px", display: "flex", borderRadius: "6px"}}>
-      <Avatar sx={{ bgcolor: blue[500]}}>
-        {getInitials(message.sender.fullname)}
+    <Box
+      sx={{
+        border: "1px solid #ccc",
+        padding: "10px",
+        display: "flex",
+        borderRadius: "6px",
+      }}
+    >
+      <Avatar sx={{ bgcolor: blue[500] }}>
+        {getInitials(message.senderFullname)}
       </Avatar>
-      <div style={{ marginLeft: "10px", flex: 1}}>
-        <Typography variant="body1" sx={{fontWeight: "bold"}}>
-          {message.sender.fullname}
+      <div style={{ marginLeft: "10px", flex: 1 }}>
+        <Typography variant="body1" sx={{ fontWeight: "bold" }}>
+          {message.senderFullname}
         </Typography>
-        <Typography variant="body1">
-          {message.message}
-        </Typography>
-        <div style={{ textAlign: "right", color: "#777"}}>
+        <Typography variant="body1">{message.message}</Typography>
+        <div style={{ textAlign: "right", color: "#777" }}>
           <Typography title={formattedDate} variant="caption">
             {timeAgo.format(date)}
           </Typography>
@@ -49,10 +51,12 @@ Message.propTypes = {
   message: PropTypes.shape({
     id: PropTypes.string.isRequired,
     message: PropTypes.string.isRequired,
-    sender: PropTypes.object.isRequired,
-    receiver: PropTypes.object.isRequired,
-    createdAt: PropTypes.string.isRequired
-  }).isRequired
+    senderId: PropTypes.string.isRequired,
+    senderFullname: PropTypes.string.isRequired,
+    receiverId: PropTypes.string.isRequired,
+    receiverFullname: PropTypes.string.isRequired,
+    createdAt: PropTypes.string.isRequired,
+  }).isRequired,
 };
 
 export default Message;

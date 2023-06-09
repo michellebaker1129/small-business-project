@@ -2,6 +2,8 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { ApolloProvider } from "@apollo/react-hooks";
 import { BrowserRouter } from "react-router-dom";
+import TimeAgo from "javascript-time-ago";
+import en from "javascript-time-ago/locale/en";
 
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
@@ -9,6 +11,8 @@ import client from "./apollo/apolloClient";
 import { AuthProvider } from "./context/authContext";
 import { NotificationProvider } from "./context/notificationContext";
 import { MessageProvider } from "./context/messageContext";
+
+TimeAgo.addDefaultLocale(en);
 
 import "./index.css";
 
@@ -26,7 +30,7 @@ root.render(
         </ApolloProvider>
       </NotificationProvider>
     </MessageProvider>
-  </AuthProvider>,
+  </AuthProvider>
 );
 
 // If you want to start measuring performance in your app, pass a function

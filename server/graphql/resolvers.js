@@ -1,13 +1,19 @@
 import { ApolloError } from "apollo-server-errors";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { PubSub, withFilter } from 'graphql-subscriptions';
+import { PubSub, withFilter } from "graphql-subscriptions";
 
 import { User } from "../models/User.js";
 import { Post } from "../models/Post.js";
 import { Comment } from "../models/Comment.js";
 import { Image } from "../models/Image.js";
-import { USER_ALREADY_EXISTS, USER_DOESNT_EXIST, PASSWORD_SALT, INCORRECT_PASSWORD, USER_ROLES } from "../utils/constants.js";
+import {
+  USER_ALREADY_EXISTS,
+  USER_DOESNT_EXIST,
+  PASSWORD_SALT,
+  INCORRECT_PASSWORD,
+  USER_ROLES,
+} from "../utils/constants.js";
 
 const pubsub = new PubSub();
 
@@ -43,11 +49,11 @@ const resolvers = {
       if (admin.role !== USER_ROLES.ADMIN) {
         throw new Error(`User with ID ${adminId} is not an admin`);
       }
-      
+
       // check if client exists
       const client = await User.findById(clientId);
       // return client info
-      if (!client) { 
+      if (!client) {
         throw new Error(`User with ID ${clientId} not found`);
       }
       return userIsAdmin ? client : admin;
@@ -55,24 +61,20 @@ const resolvers = {
 
     posts: async () => await Post.find({}),
     post: async (_, args) => await Post.findById(args.id),
-    getAllPostsByConversationParticipantIds: async (_, args) => {
+    getAllPostsByClientId: async (_, args) => {
       // TODO add pagination
-      const { clientId, adminId } = args;
+      const { clientId } = args;
 
       const posts = await Post.find({
-        $or: [
-          { senderId: clientId, receiverId: adminId },
-          { senderId: adminId, receiverId: clientId },
-        ],
-      })
-        .sort({ createdAt: 1 });
-      
+        $or: [{ senderId: clientId }, { receiverId: clientId }],
+      }).sort({ createdAt: 1 });
+
       return posts;
     },
 
     images: async () => await Image.find({}),
     image: async (_, args) => await Image.findById(args.id),
-    
+
     comments: async () => await Comment.find({}),
     comment: async (_, args) => await Comment.findById(args.id),
   },
@@ -114,7 +116,10 @@ const resolvers = {
 
       // throw error if user exists
       if (oldUser) {
-        throw new ApolloError("A user is already registered with the email: " + email, USER_ALREADY_EXISTS);
+        throw new ApolloError(
+          "A user is already registered with the email: " + email,
+          USER_ALREADY_EXISTS
+        );
       }
 
       // encrypt password
@@ -159,11 +164,17 @@ const resolvers = {
 
       // throw error if user doesn't exist
       if (!foundUser) {
-        throw new ApolloError("No user found with the email: " + email, USER_DOESNT_EXIST);
+        throw new ApolloError(
+          "No user found with the email: " + email,
+          USER_DOESNT_EXIST
+        );
       }
 
       // check if password is correct
-      const isPasswordCorrect = await bcrypt.compare(password, foundUser.password);
+      const isPasswordCorrect = await bcrypt.compare(
+        password,
+        foundUser.password
+      );
 
       // throw error if password is incorrect
       if (!isPasswordCorrect) {
@@ -221,14 +232,14 @@ const resolvers = {
       const newImages = [];
 
       // TODO maybe reuse this?
-      for (let i = 0; i < imageUrls.length; i++) {
-        const newImage = new Image({
-          url: imageUrls[i], // /images/1234.jpg
-          userId,
-        });
-        await newImage.save();
-        newImages.push(newImage);
-      }
+      // for (let i = 0; i < imageUrls.length; i++) {
+      //   const newImage = new Image({
+      //     url: imageUrls[i], // /images/1234.jpg
+      //     userId,
+      //   });
+      //   await newImage.save();
+      //   newImages.push(newImage);
+      // }
 
       const newPost = new Post({
         message,
@@ -239,7 +250,10 @@ const resolvers = {
       return newPost;
     },
 
-    sendMessage: async (_, {messageInput: { senderId, message, receiverId }}) => {
+    sendMessage: async (
+      _,
+      { messageInput: { senderId, message, receiverId } }
+    ) => {
       // check if sender exists
       const sender = await User.findById(senderId);
 
@@ -250,7 +264,10 @@ const resolvers = {
       }
 
       // check if sender is admin or receiver is admin
-      if (sender.role !== USER_ROLES.ADMIN && receiver.role !== USER_ROLES.ADMIN) {
+      if (
+        sender.role !== USER_ROLES.ADMIN &&
+        receiver.role !== USER_ROLES.ADMIN
+      ) {
         throw new Error("Messages cannot be sent between two clients");
       }
 
@@ -258,10 +275,14 @@ const resolvers = {
       const newMessage = new Post({
         senderId,
         message,
+        senderFullname: sender.fullname,
         receiverId,
+        receiverFullname: receiver.fullname,
         createdAt: new Date(),
       });
-      
+
+      console.log(newMessage);
+
       // save message to sender and receiver
       await newMessage.save();
 
@@ -352,9 +373,9 @@ const resolvers = {
         (payload, variables) => {
           return payload.messageSent.receiverId === variables.receiverId;
         }
-      )
-    }
-  }
+      ),
+    },
+  },
 };
 
 export { resolvers };

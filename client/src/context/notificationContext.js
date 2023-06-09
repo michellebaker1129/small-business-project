@@ -38,17 +38,21 @@ export const NotificationContext = createContext();
 export const NotificationProvider = ({ children }) => {
   const [state, dispatch] = useReducer(notificationReducer, initialState);
 
+  const clearNotification = () => {
+    dispatch({
+      type: "CLEAR_NOTIFICATION",
+    });
+  };
+
   const setNotification = (notification) => {
     dispatch({
       type: "SET_NOTIFICATION",
       payload: notification,
     });
-  };
 
-  const clearNotification = () => {
-    dispatch({
-      type: "CLEAR_NOTIFICATION",
-    });
+    setTimeout(() => {
+      clearNotification();
+    }, 3000);
   };
 
   return (
