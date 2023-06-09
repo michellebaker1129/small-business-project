@@ -14,11 +14,12 @@ const RecipientPicker = () => {
 
   if (error) return <div>Error {error}</div>;
 
-  const options = data?.getAllAdmins?.map((admin) => ({
-    id: admin.id,
-    fullname: admin.fullname,
-    label: admin.fullname,
-  }));
+  const options =
+    data?.getAllAdmins?.map((admin) => ({
+      id: admin.id,
+      fullname: admin.fullname,
+      label: admin.fullname,
+    })) || [];
 
   const handleOnChange = (e) => {
     addRecipient(options.find((option) => option.id === e.target.value));
