@@ -3,11 +3,8 @@ import bcrypt from "bcryptjs";
 // import jwt from "jsonwebtoken";
 // import { PubSub, withFilter } from "graphql-subscriptions";
 import { signToken } from "../utils/auth.js";
+import {User, Post, Comment, Image} from "../models/index.js";
 
-import { User } from "../models/User.js";
-import { Post } from "../models/Post.js";
-import { Comment } from "../models/Comment.js";
-import { Image } from "../models/Image.js";
 import {
   USER_ALREADY_EXISTS,
   USER_DOESNT_EXIST,

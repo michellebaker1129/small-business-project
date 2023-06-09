@@ -1,8 +1,20 @@
-import { model } from "mongoose";
+const { Schema, model } = require('mongoose');
 
-const Image = model("Image", {
+const imageSchema = new Schema({
   url: String,
   userId: String,
 });
 
-export { Image };
+const Image = model('Image', imageSchema);
+
+module.exports = Image;
+
+
+// import { model } from "mongoose";
+
+// const Image = model("Image", {
+//   url: String,
+//   userId: String,
+// });
+
+// export { Image };
