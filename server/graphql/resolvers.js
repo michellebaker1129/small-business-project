@@ -1,7 +1,8 @@
 import { ApolloError } from "apollo-server-errors";
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
-import { PubSub, withFilter } from "graphql-subscriptions";
+// import jwt from "jsonwebtoken";
+// import { PubSub, withFilter } from "graphql-subscriptions";
+import { signToken } from "../utils/auth.js";
 
 import { User } from "../models/User.js";
 import { Post } from "../models/Post.js";
