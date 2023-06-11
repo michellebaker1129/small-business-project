@@ -17,6 +17,7 @@ const useForm = (callback, initialState = {}) => {
     e.preventDefault();
 
     await callback();
+    clearForm(); // wasnt here before
   };
 
   return {

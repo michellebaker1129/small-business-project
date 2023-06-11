@@ -7,15 +7,13 @@ import { AuthContext } from "../context/authContext";
 
 import useRole from "../hooks/useRole";
 
-// TODO get more info from users
-// TODO add pagination
 const GET_ALL_USERS = gql`
   query getAllUsers($id: ID!) {
     getAllUsers(id: $id) {
       id
       email
       fullname
-      
+      username
     }
   }
 `;
@@ -25,10 +23,12 @@ const AdminDashboard = () => {
   const { user } = useContext(AuthContext);
   const { isAdmin, isClient, isLoggedOut } = useRole();
   const navigate = useNavigate();
-  
+
   // if (!user || isLoggedOut) {
-  //   return redirect("/login");
+  //   navigate("/login");
+  //   return null;
   // }
+  
 
   // // if the user is logged in, but not admin, redirect to /client
   // if (isClient) {
