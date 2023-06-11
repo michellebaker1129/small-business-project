@@ -23,14 +23,11 @@ const AdminDashboard = () => {
   const { user } = useContext(AuthContext);
   const { isAdmin, isClient, isLoggedOut } = useRole();
   const navigate = useNavigate();
-  
+
   // if (!user || isLoggedOut) {
-  //   return redirect("/login");
+  //   navigate("/login");
+  //   return null;
   // }
-  if (!user || isLoggedOut) {
-    navigate("/login");
-    return null;
-  }
   
 
   // // if the user is logged in, but not admin, redirect to /client
