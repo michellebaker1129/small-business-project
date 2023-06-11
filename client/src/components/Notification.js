@@ -1,16 +1,26 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
 import Stack from "@mui/material/Stack";
 
 import { NotificationContext } from "../context/notificationContext";
 
-// TODO set up a useEffect to listen for changes to notification, and trigger the snackbar when it changes
-// TODO use this component in App.js
 
 function Notification () {
   const { notification, clearNotification } = useContext(NotificationContext);
   const { message, type, show } = notification;
+
+  useEffect(() => {
+
+    if (show){
+      //triggers snackbar
+      showSnackbar();
+    }
+  }, [show]);
+
+  const showSnackbar = () => {
+    
+  };
 
   if (!show) return null;
 
