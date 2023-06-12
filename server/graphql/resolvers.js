@@ -291,6 +291,7 @@ const resolvers = {
       // save message to sender and receiver
       await newMessage.save();
 
+      // publish message to pubsub
       pubsub.publish("MESSAGE_SENT", { messageSent: newMessage });
 
       return newMessage;
@@ -374,8 +375,10 @@ const resolvers = {
   Subscription: {
     messageSent: {
       subscribe: withFilter(
+        // subscribe to MESSAGE_SENT pubsub event
         () => pubsub.asyncIterator(["MESSAGE_SENT"]),
         (payload, variables) => {
+          // check if message is for this client (if false, client doesn't receive message)
           return (
             payload.messageSent.receiverId === variables.clientId ||
             payload.messageSent.senderId === variables.clientId
