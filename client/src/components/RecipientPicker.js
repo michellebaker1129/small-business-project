@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { FormControl, InputLabel, Select, MenuItem } from "@mui/material";
 import { useQuery } from "@apollo/client";
 
@@ -10,10 +10,6 @@ const RecipientPicker = () => {
   const { data, loading, error } = useQuery(GET_ALL_ADMINS);
   const { recipient, addRecipient } = useContext(MessageContext);
 
-  if (loading) return <div>loading...</div>;
-
-  if (error) return <div>Error {error}</div>;
-
   const options = data?.getAllAdmins?.map((admin) => ({
     id: admin.id,
     fullname: admin.fullname,
@@ -23,6 +19,17 @@ const RecipientPicker = () => {
   const handleOnChange = (e) => {
     addRecipient(options.find((option) => option.id === e.target.value));
   };
+
+  useEffect(() => {
+    // when get all admins finishes, set the first admin as the recipient
+    if (options?.length > 0 && !recipient.id) {
+      addRecipient(options[0]);
+    }
+  }, [options, recipient, addRecipient]);
+
+  if (loading) return <div>loading...</div>;
+
+  if (error) return <div>Error {error}</div>;
 
   return (
     <FormControl sx={{ minWidth: "200px", margin: "10px" }}>

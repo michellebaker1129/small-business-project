@@ -4,6 +4,8 @@ import { Alert, Box, Button, Stack, TextField } from "@mui/material";
 import { useMutation, gql } from "@apollo/client";
 import { blue } from "@mui/material/colors";
 import { IoSendSharp } from "react-icons/io5";
+import { BsFillPersonPlusFill } from "react-icons/bs";
+import { AiOutlineClose } from "react-icons/ai";
 
 import { useForm } from "../hooks";
 import { AuthContext } from "../context/authContext";
@@ -32,6 +34,7 @@ const SEND_MESSAGE = gql`
 `;
 
 function ContactForm({ messageParticipant }) {
+  const [showPanel, setShowPanel] = useState(false);
   const [errors, setErrors] = useState([]);
   const { user } = useContext(AuthContext);
   const { setNotification } = useContext(NotificationContext);
@@ -80,13 +83,26 @@ function ContactForm({ messageParticipant }) {
           </Alert>
         ))}
       <Box sx={{ bgcolor: blue[50], padding: "10px" }}>
-        {!userIsAdmin && <RecipientPicker />}
+        {!userIsAdmin && (
+          <Box sx={{ display: showPanel ? "block" : "none" }}>
+            <RecipientPicker />
+          </Box>
+        )}
 
         <Stack
           sx={{ bgcolor: blue[50], padding: "10px" }}
           spacing={2}
           direction="row"
         >
+          {/* add a button to show/hide the recipientpicker */}
+          {!userIsAdmin && (
+            <Button
+              onClick={() => setShowPanel(!showPanel)}
+              variant="contained"
+            >
+              {!showPanel ? <BsFillPersonPlusFill /> : <AiOutlineClose />}
+            </Button>
+          )}
           <TextField
             label="Message"
             name="message"

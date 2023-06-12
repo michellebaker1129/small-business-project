@@ -1,7 +1,7 @@
-import React, { useMemo, useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState, useRef } from "react";
 import PropTypes from "prop-types";
 import { useQuery, useSubscription, gql } from "@apollo/client";
-import { Box, Stack } from "@mui/material";
+import { Box, Fab, Stack } from "@mui/material";
 import { blue } from "@mui/material/colors";
 import { MdMessage } from "react-icons/md";
 
@@ -17,7 +17,11 @@ import Message from "./Message";
 
 const MessageFeed = ({ messageParticipant }) => {
   const [messages, setMessages] = useState([]);
+  const [scrollPos, setScrollPos] = useState(0);
+  const [maxScrollPos, setMaxScrollPos] = useState(0);
+  const [hasNewMessages, setHasNewMessages] = useState(false);
   const { user } = useContext(AuthContext);
+  const messagesEndRef = useRef(null);
 
   if (!user) return null;
 
@@ -35,6 +39,13 @@ const MessageFeed = ({ messageParticipant }) => {
     },
   });
 
+  const handleScroll = (e) => {
+    const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
+    setScrollPos(scrollTop);
+    setMaxScrollPos(scrollHeight - clientHeight);
+    console.log(scrollTop, scrollHeight - clientHeight);
+  };
+
   const { getAllPostsByClientId } = data || {};
 
   // add query results to messages array
@@ -50,6 +61,15 @@ const MessageFeed = ({ messageParticipant }) => {
       setMessages((prev) => [...prev, newMessageData.messageSent]);
     }
   }, [newMessageData]);
+
+  // scroll to bottom of messages
+  useEffect(() => {
+    if (scrollPos === maxScrollPos) {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    } else {
+      setHasNewMessages(true);
+    }
+  }, [messages]);
 
   if (loading) return <p>Loading...</p>;
 
@@ -79,11 +99,46 @@ const MessageFeed = ({ messageParticipant }) => {
   }
 
   return (
-    <Stack spacing={1} sx={{ marginBottom: "50px" }}>
-      {messages.map((message) => (
-        <Message key={message.id} message={message} />
-      ))}
-    </Stack>
+    <Box
+      sx={{ maxHeight: "67vh", overflowY: "scroll", overflowX: "hidden" }}
+      onScroll={handleScroll}
+    >
+      {hasNewMessages && (
+        <Box
+          sx={{
+            position: "fixed",
+            bottom: "13vh",
+            width: "calc(100% - 32px)",
+            display: "flex",
+            justifyContent: "center",
+          }}
+        >
+          <Fab
+            sx={{
+              backgroundColor: blue[500],
+              color: blue[100],
+              "&:hover": {
+                backgroundColor: blue[700],
+              },
+            }}
+            variant="extended"
+            size="small"
+            onClick={() => {
+              messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+              setHasNewMessages(false);
+            }}
+          >
+            new messages
+          </Fab>
+        </Box>
+      )}
+      <Stack spacing={1}>
+        {messages.map((message) => (
+          <Message key={message.id} message={message} />
+        ))}
+        <div ref={messagesEndRef} />
+      </Stack>
+    </Box>
   );
 };
 

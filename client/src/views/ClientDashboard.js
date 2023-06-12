@@ -1,4 +1,5 @@
 import React, { useContext } from "react";
+import { AppBar, Toolbar } from "@mui/material";
 import Container from "@mui/material/Container";
 
 import { AuthContext } from "../context/authContext";
@@ -22,7 +23,9 @@ const ClientDashboard = () => {
         <MessageFeed messageParticipant={recipient} />
       </Container>
 
-      <ContactForm messageParticipant={recipient} />
+      <AppBar position="fixed" sx={{ top: "auto", bottom: 0 }}>
+        <ContactForm messageParticipant={recipient} />
+      </AppBar>
     </div>
   );
 };
