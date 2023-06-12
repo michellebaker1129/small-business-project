@@ -9,21 +9,19 @@ import { useForm } from "../hooks";
 import { USER_ROLES } from "../utils/constants";
 
 const LOGIN_USER = gql`
-  mutation login(
-    $loginInput: loginInput!
-  ) {
-    loginUser(
-      loginInput: $loginInput
-    ) {
+  mutation login($loginInput: loginInput!) {
+    loginUser(loginInput: $loginInput) {
       email
       role
       token
+      id
+      fullname
     }
   }
 `;
 
 function Login() {
-  const context = useContext(AuthContext);
+  const { login } = useContext(AuthContext);
   const navigate = useNavigate();
   const [errors, setErrors] = useState([]);
 
@@ -34,13 +32,7 @@ function Login() {
 
   const [loginUser, { loading }] = useMutation(LOGIN_USER, {
     update(_, { data: { loginUser: userData } }) {
-      context.login(userData);
-      // if admin, navigate to admin page
-      // if (userData.role === USER_ROLES.ADMIN) {
-      //   navigate("/admin");
-      // } else {
-      //   navigate("/");
-      // }
+      login(userData);
       navigate("/");
     },
     onError({ graphQLErrors }) {
@@ -74,11 +66,12 @@ function Login() {
           required
         />
       </Stack>
-      {errors.length > 0 && errors.map((error) => (
-        <Alert severity="error" key={error}>
-          {error.message}
-        </Alert>
-      ))}
+      {errors.length > 0 &&
+        errors.map((error) => (
+          <Alert severity="error" key={error}>
+            {error.message}
+          </Alert>
+        ))}
       <Button onClick={onSubmit} variant="contained">
         Login
       </Button>

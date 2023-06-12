@@ -56,13 +56,11 @@ function ContactForm({ messageParticipant }) {
     variables: {
       messageInput: {
         message: values.message,
-        senderId: user.user_id,
+        senderId: user.id,
         receiverId: messageParticipant.id,
       },
     },
   });
-
-  console.log(values);
 
   function handleSubmit() {
     sendMessage();

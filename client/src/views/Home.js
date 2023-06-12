@@ -10,11 +10,17 @@ function Home() {
   return (
     <div>
       <h1>Home Page</h1>
-      {isAdmin && <h2>
-        <Link to="/admin">Admin</Link>  
-      </h2>}
+      {isAdmin && (
+        <h2>
+          <Link to="/admin">Admin</Link>
+        </h2>
+      )}
 
-      {isClient && <h2>Client</h2>}
+      {isClient && (
+        <h2>
+          <Link to="/dashboard">Dashboard</Link>
+        </h2>
+      )}
 
       {isLoggedOut && <h2>Logged Out</h2>}
     </div>

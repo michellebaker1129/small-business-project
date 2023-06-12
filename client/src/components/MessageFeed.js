@@ -22,7 +22,7 @@ const MessageFeed = ({ messageParticipant }) => {
   if (!user) return null;
 
   const clientId =
-    user.role === USER_ROLES.ADMIN ? messageParticipant.id : user.user_id;
+    user.role === USER_ROLES.ADMIN ? messageParticipant.id : user.id;
 
   // subscribe to new messages
   const { data: newMessageData } = useSubscription(NEW_MESSAGE_SUBSCRIPTION, {

@@ -22,7 +22,7 @@ const authLink = setContext((_, { headers }) => {
 
 const wsLink = new GraphQLWsLink(
   createClient({
-    url: "ws://localhost:3001/graphql",
+    url: process.env.REACT_APP_WEBSOCKET_ENDPOINT || "ws://localhost:3001/graphql",
     connectionParams: {
       authToken: localStorage.getItem("token"),
     },

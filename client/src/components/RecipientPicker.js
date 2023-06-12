@@ -30,7 +30,7 @@ const RecipientPicker = () => {
       <Select
         labelId="recipient-input-label"
         id="recipient-input"
-        value={recipient.id}
+        value={recipient.id || options[0]?.id || ""}
         label="Choose recipient"
         onChange={handleOnChange}
       >

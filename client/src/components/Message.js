@@ -24,7 +24,7 @@ const Message = ({ message }) => {
     return initials.toUpperCase();
   };
 
-  const showRecipient = user.user_id !== message.receiverId;
+  const showRecipient = user.id !== message.receiverId;
   const recipientMarkup = showRecipient ? (
     <div>
       <Typography variant="body1" sx={{ fontWeight: "bold" }}>

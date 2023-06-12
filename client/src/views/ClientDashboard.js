@@ -12,7 +12,7 @@ const ClientDashboard = () => {
   const { user } = useContext(AuthContext);
   const { recipient } = useContext(MessageContext);
 
-  if (!recipient) return <div>Loading...</div>;
+  if (!recipient || !user) return <div>Loading...</div>;
 
   return (
     <div>

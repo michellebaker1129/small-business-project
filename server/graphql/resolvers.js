@@ -113,7 +113,10 @@ const resolvers = {
       return newUser;
     },
 
-    registerUser: async (_, { registerInput: { email, password, fullname } }) => {
+    registerUser: async (
+      _,
+      { registerInput: { email, password, fullname } }
+    ) => {
       // check if user exists
       const oldUser = await User.findOne({ email });
 
@@ -139,7 +142,7 @@ const resolvers = {
       // create jwt (attach to user model)
       const token = jwt.sign(
         {
-          user_id: newUser._id,
+          id: newUser._id,
           role: newUser.role,
           fullname: newUser.fullname,
           email,
@@ -188,7 +191,7 @@ const resolvers = {
       // create jwt (attach to user model)
       const token = jwt.sign(
         {
-          user_id: foundUser._id,
+          id: foundUser._id,
           role: foundUser.role,
           fullname: foundUser.fullname,
           email,
@@ -373,7 +376,10 @@ const resolvers = {
       subscribe: withFilter(
         () => pubsub.asyncIterator(["MESSAGE_SENT"]),
         (payload, variables) => {
-          return payload.messageSent.receiverId === variables.clientId || payload.messageSent.senderId === variables.clientId;
+          return (
+            payload.messageSent.receiverId === variables.clientId ||
+            payload.messageSent.senderId === variables.clientId
+          );
         }
       ),
     },

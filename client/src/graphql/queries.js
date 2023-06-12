@@ -36,3 +36,13 @@ export const GET_ALL_ADMINS = gql`
     }
   }
 `;
+
+export const GET_ALL_USERS = gql`
+  query getAllUsers($id: ID!) {
+    getAllUsers(id: $id) {
+      id
+      email
+      fullname
+    }
+  }
+`;
