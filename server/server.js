@@ -1,18 +1,18 @@
-import { ApolloServer } from '@apollo/server';
-import { expressMiddleware } from '@apollo/server/express4';
-import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
-import { createServer } from 'http';
-import express from 'express';
-import { makeExecutableSchema } from '@graphql-tools/schema';
-import { WebSocketServer } from 'ws';
-import { useServer } from 'graphql-ws/lib/use/ws';
-import bodyParser from 'body-parser';
-import cors from 'cors';
+import { ApolloServer } from "@apollo/server";
+import { expressMiddleware } from "@apollo/server/express4";
+import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHttpServer";
+import { createServer } from "http";
+import express from "express";
+import { makeExecutableSchema } from "@graphql-tools/schema";
+import { WebSocketServer } from "ws";
+import { useServer } from "graphql-ws/lib/use/ws";
+import bodyParser from "body-parser";
+import cors from "cors";
 import mongoose from "mongoose";
 import dotenv from "dotenv/config";
 
-import {resolvers} from './graphql/resolvers.js';
-import {typeDefs} from './models/typeDefs.js';
+import { resolvers } from "./graphql/resolvers.js";
+import { typeDefs } from "./models/typeDefs.js";
 
 // Create the schema, which will be used separately by ApolloServer and
 // the WebSocket server.
@@ -23,19 +23,20 @@ const schema = makeExecutableSchema({ typeDefs, resolvers });
 const app = express();
 const httpServer = createServer(app);
 const corsOptions = {
-  origin: 'http://localhost:3000',
+  origin: "http://localhost:3000",
+  credentials: true,
 };
 
 app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
-  res.header('Access-Control-Request-Headers', 'Content-Type, Authorization');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  res.header('Access-Control-Allow-Credentials', 'true');
+  res.header("Access-Control-Allow-Origin", "http://localhost:3000");
+  res.header("Access-Control-Request-Headers", "Content-Type, Authorization");
+  res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  res.header("Access-Control-Allow-Credentials", "true");
   next();
 });
 
-app.options('/*', (_, res) => {
+app.options("/*", (_, res) => {
   res.sendStatus(200);
 });
 
@@ -47,14 +48,14 @@ await mongoose
   .then(() => {
     console.log(`Db Connected`);
   })
-  .catch(err => {
+  .catch((err) => {
     console.log(err.message);
   });
 
 // Create our WebSocket server using the HTTP server we just set up.
 const wsServer = new WebSocketServer({
   server: httpServer,
-  path: '/graphql',
+  path: "/graphql",
 });
 // Save the returned server's info so we can shutdown this server later
 const serverCleanup = useServer({ schema }, wsServer);
@@ -80,7 +81,12 @@ const server = new ApolloServer({
 });
 
 await server.start();
-app.use('/graphql', cors(corsOptions), bodyParser.json(), expressMiddleware(server));
+app.use(
+  "/graphql",
+  cors(corsOptions),
+  bodyParser.json(),
+  expressMiddleware(server)
+);
 
 const PORT = process.env.PORT || 4000;
 // Now that our HTTP server is fully set up, we can listen to it.
