@@ -1,4 +1,5 @@
 import React, { useContext } from "react";
+import { Container } from "@mui/material";
 
 import { AuthContext } from "../context/authContext";
 
@@ -12,7 +13,7 @@ const AdminDashboard = () => {
   const { user } = useContext(AuthContext);
 
   if (!user) {
-    return <div>Loading...</div>;
+    return <Container>Loading...</Container>;
   }
 
   return <AdminDashboardComponent user={user} />;

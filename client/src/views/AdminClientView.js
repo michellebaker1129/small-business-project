@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { useQuery, gql } from "@apollo/client";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import {
   AppBar,
   Box,
@@ -55,9 +55,11 @@ const AdminClientView = () => {
   // render client info
   return (
     <Container sx={{ marginTop: "20px" }}>
-      <Button href="/admin">
-        <IoChevronBackOutline /> Back
-      </Button>
+      <Link to="/admin">
+        <Button>
+          <IoChevronBackOutline /> Back
+        </Button>
+      </Link>
 
       <Box sx={{ display: "flex", justifyContent: "space-between" }}>
         <Box>

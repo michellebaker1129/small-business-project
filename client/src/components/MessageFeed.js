@@ -64,7 +64,10 @@ const MessageFeed = ({ messageParticipant }) => {
 
   // scroll to bottom of messages
   useEffect(() => {
-    if (scrollPos === maxScrollPos) {
+    if (
+      // if we are scrolled more than a few pixels from the bottom
+      scrollPos < maxScrollPos - 10
+    ) {
       messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     } else {
       setHasNewMessages(true);
@@ -100,7 +103,12 @@ const MessageFeed = ({ messageParticipant }) => {
 
   return (
     <Box
-      sx={{ maxHeight: "67vh", overflowY: "scroll", overflowX: "hidden" }}
+      sx={{
+        maxHeight: "67vh",
+        overflowY: "scroll",
+        overflowX: "hidden",
+        marginBottom: "4rem",
+      }}
       onScroll={handleScroll}
     >
       {hasNewMessages && (

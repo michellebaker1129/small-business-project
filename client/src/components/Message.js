@@ -7,23 +7,13 @@ import { blue } from "@mui/material/colors";
 
 import { AuthContext } from "../context/authContext";
 import { USER_ROLES } from "../utils/constants";
+import { getInitials } from "../utils/getInitials";
 
 const Message = ({ message }) => {
   const { user } = useContext(AuthContext);
   const timeAgo = new TimeAgo("en-US");
   const date = new Date(message.createdAt);
   const formattedDate = dayjs(date).format("DD/MM/YYYY HH:mm:ss");
-
-  // get initials from fullname
-  const getInitials = (fullname) => {
-    const names = fullname.split(" ");
-    let initials = "";
-    names.forEach((name) => {
-      initials += name.charAt(0);
-    });
-    return initials.toUpperCase();
-  };
-
   const showRecipient = user.id !== message.receiverId;
   const recipientMarkup = showRecipient ? (
     <div>

@@ -1,5 +1,6 @@
 import React, { useContext } from "react";
 import { Link } from "react-router-dom";
+import { Container } from "@mui/material";
 
 import useRole from "../hooks/useRole";
 import { AuthContext } from "../context/authContext";
@@ -8,7 +9,7 @@ function Home() {
   const { isAdmin, isClient, isLoggedOut } = useRole();
 
   return (
-    <div>
+    <Container>
       <h1>Home Page</h1>
       {isAdmin && (
         <h2>
@@ -23,7 +24,7 @@ function Home() {
       )}
 
       {isLoggedOut && <h2>Logged Out</h2>}
-    </div>
+    </Container>
   );
 }
 
